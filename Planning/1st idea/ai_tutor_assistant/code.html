@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Tutor Chat</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Custom scrollbar for chat area */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c7c4d8; /* outline-variant */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #777587; /* outline */
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "primary-container": "#4f46e5",
+                        "secondary": "#831ada",
+                        "on-primary-fixed": "#0f0069",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d2d9f4",
+                        "surface-container-highest": "#dae2fd",
+                        "surface-container-high": "#e2e7ff",
+                        "inverse-surface": "#283044",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#4d44e3",
+                        "tertiary-container": "#006a7c",
+                        "surface": "#faf8ff",
+                        "tertiary-fixed-dim": "#4cd7f6",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "background": "#faf8ff",
+                        "surface-bright": "#faf8ff",
+                        "outline-variant": "#c7c4d8",
+                        "on-tertiary-fixed": "#001f26",
+                        "on-tertiary-container": "#93e8ff",
+                        "on-tertiary-fixed-variant": "#004e5c",
+                        "secondary-fixed": "#f0dbff",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-variant": "#dae2fd",
+                        "on-secondary-fixed": "#2c0051",
+                        "on-surface": "#131b2e",
+                        "outline": "#777587",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#00505f",
+                        "secondary-fixed-dim": "#ddb8ff",
+                        "on-background": "#131b2e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#9e41f5",
+                        "primary-fixed": "#e2dfff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-primary-container": "#dad7ff",
+                        "primary": "#3525cd",
+                        "on-secondary-fixed-variant": "#6800b4",
+                        "surface-container": "#eaedff",
+                        "on-surface-variant": "#464555",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary-fixed": "#acedff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "unit": "4px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-md": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md h-screen w-full flex overflow-hidden">
+<!-- SideNavBar (from JSON) -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/20 bg-surface-container-low z-40 py-6">
+<!-- Header -->
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden shrink-0">
+<img alt="Student Profile" class="w-full h-full object-cover" data-alt="A highly detailed portrait photo of a young student, modern lighting, clear background, professional headshot style, shallow depth of field, high resolution, 8k, photorealistic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA__MuV43VmGvkf8hHxKFT6m81EWGnjWkOYG3Xkw8tbnE0zTHH2-MGRprLMHEARuRFbtS0Jgv7xiR2fAev1_8eHrIsg5IKl_Ch2f3xwKp5u06G7GhV3FKbZQYTLblIKwI3ODfFdx9E655SsqfpIGjbMi6LAzUV5EkYybo7TdpnQYwDE-r8JuSaq25IICFq8-D0zAMAPOxmOAKlvCxd-JTZ82RhR2HZ4DRJ8f9j2X9y4A_gBOY2hiiLIEVNAYeH4P8JfHVp3LKGR8C61"/>
+</div>
+<div class="overflow-hidden">
+<div class="font-headline-md text-headline-md font-extrabold text-primary truncate text-sm">Welcome back</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant truncate">AI Apprentice</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto">
+<div class="flex flex-col space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 mx-2 my-1 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- My Learning -->
+<a class="flex items-center gap-3 px-4 py-3 mx-2 my-1 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-md text-label-md">My Learning</span>
+</a>
+<!-- AI Tutor (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 mx-2 my-1 rounded-lg bg-secondary-container text-on-secondary-container transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span class="font-label-md text-label-md">AI Tutor</span>
+</a>
+<!-- Certificates -->
+<a class="flex items-center gap-3 px-4 py-3 mx-2 my-1 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-label-md text-label-md">Certificates</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-4 py-3 mx-2 my-1 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-auto px-4 flex flex-col space-y-1 pt-4">
+<a class="flex items-center justify-center w-full py-2 mb-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:opacity-90 transition-opacity shadow-sm" href="#">
+                Upgrade to Pro
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="font-label-sm text-label-sm">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="font-label-sm text-label-sm">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Chat Content -->
+<main class="flex-1 flex flex-col h-full md:ml-64 relative bg-surface">
+<!-- Mobile Header (Visible only on small screens, minimal for chat) -->
+<div class="md:hidden flex items-center justify-between p-4 border-b border-outline-variant/20 bg-surface/80 backdrop-blur-md z-30">
+<button class="text-on-surface p-2 rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="font-headline-md text-headline-md text-lg text-primary font-bold">AI Tutor</div>
+<div class="w-8 h-8 rounded-full overflow-hidden">
+<img alt="Student Profile" class="w-full h-full object-cover" data-alt="A highly detailed portrait photo of a young student, modern lighting, clear background, professional headshot style, shallow depth of field, high resolution, 8k, photorealistic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6XfF4tPoW88PFrFdeh63bZUfYAIm95--sUZ3Wwa-j_VWUR76zShypFqHB0g1tN_uB7DdUeZoIupSpwr3LrblWC2a5I6KOJVXro8cPVmKtPIo_flsi8c5cCxzvkFzaC1CwTG5neqS_ATgYNjc9yNn2vqs1mYbuiwK2dC0r-MaaJCmprbvg6QdfAtnF4b_hcucEQTRULOkJUW0-0H1kHU1qlIs6Z-HL8yXJX7amCbWmhM8-AEF-LkNeRBt2b5HeGov8zjy6ZCGGq84U"/>
+</div>
+</div>
+<!-- Chat Area Container -->
+<div class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col space-y-6 pb-40">
+<!-- Date/Context Divider -->
+<div class="flex items-center justify-center pt-2 pb-4">
+<div class="bg-surface-container-high px-3 py-1 rounded-full font-label-sm text-label-sm text-on-surface-variant">
+                    Module 4: Machine Learning Basics
+                </div>
+</div>
+<!-- AI Message 1 -->
+<div class="flex items-start gap-4 max-w-4xl mx-auto w-full">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-[20px] text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="bg-surface-container rounded-2xl rounded-tl-sm p-5 text-on-surface shadow-sm border border-outline-variant/10">
+<p class="font-body-md text-body-md mb-2">Hello! I'm your AI Tutor. We're currently working on understanding algorithms. How can I help you today?</p>
+</div>
+</div>
+<!-- User Message 1 -->
+<div class="flex items-start gap-4 max-w-4xl mx-auto w-full justify-end">
+<div class="bg-primary text-on-primary rounded-2xl rounded-tr-sm p-5 shadow-[0_4px_12px_rgba(79,70,229,0.2)] max-w-[80%]">
+<p class="font-body-md text-body-md">Can you explain what Gradient Descent is? I read the chapter but I'm still a bit confused on how the 'learning rate' works.</p>
+</div>
+</div>
+<!-- AI Message 2 -->
+<div class="flex items-start gap-4 max-w-4xl mx-auto w-full">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-[20px] text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="bg-surface-container rounded-2xl rounded-tl-sm p-5 text-on-surface shadow-sm border border-outline-variant/10 w-full max-w-[85%]">
+<p class="font-body-md text-body-md mb-4">Absolutely! It's a tricky concept at first. Let's break it down simply.</p>
+<p class="font-body-md text-body-md mb-4">Imagine you are blindfolded at the top of a mountain, and your goal is to reach the lowest point in the valley. You feel the slope of the ground with your feet and take a step in the downward direction.</p>
+<div class="bg-surface rounded-xl p-4 mb-4 border border-outline-variant/20">
+<h4 class="font-headline-md text-headline-md text-base mb-2">The Learning Rate</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                            The <strong>learning rate</strong> is the size of the step you take. 
+                            <br/><br/>
+                            • If your steps are <strong>too big</strong> (high learning rate), you might step entirely over the valley and end up on the other side of the mountain.
+                            <br/>
+                            • If your steps are <strong>too small</strong> (low learning rate), it will take you a very, very long time to reach the bottom.
+                        </p>
+</div>
+<p class="font-body-md text-body-md">Would you like to see a code example of how this is implemented, or would you prefer a quick quiz to test your understanding so far?</p>
+</div>
+</div>
+</div>
+<!-- Input Section (Fixed at bottom) -->
+<div class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-background via-background/90 to-transparent">
+<div class="max-w-4xl mx-auto w-full">
+<!-- Suggested Prompts Chips -->
+<div class="flex overflow-x-auto gap-2 pb-4 hide-scrollbar snap-x">
+<button class="snap-start shrink-0 bg-surface-container hover:bg-surface-container-highest border border-outline-variant/20 rounded-full px-4 py-2 font-label-sm text-label-sm text-on-surface transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">airplay</span>
+                        Explain simpler
+                    </button>
+<button class="snap-start shrink-0 bg-surface-container hover:bg-surface-container-highest border border-outline-variant/20 rounded-full px-4 py-2 font-label-sm text-label-sm text-on-surface transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">lightbulb</span>
+                        Give examples
+                    </button>
+<button class="snap-start shrink-0 bg-surface-container hover:bg-surface-container-highest border border-outline-variant/20 rounded-full px-4 py-2 font-label-sm text-label-sm text-on-surface transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">fitness_center</span>
+                        Create exercises
+                    </button>
+<button class="snap-start shrink-0 bg-surface-container hover:bg-surface-container-highest border border-outline-variant/20 rounded-full px-4 py-2 font-label-sm text-label-sm text-on-surface transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">quiz</span>
+                        Quiz me
+                    </button>
+<button class="snap-start shrink-0 bg-surface-container hover:bg-surface-container-highest border border-outline-variant/20 rounded-full px-4 py-2 font-label-sm text-label-sm text-on-surface transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+                        Help with homework
+                    </button>
+</div>
+<!-- Input Box Container (Glassmorphism) -->
+<div class="bg-surface/80 backdrop-blur-xl border border-outline-variant/30 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-3xl p-2 flex items-end gap-2 focus-within:ring-2 focus-within:ring-primary-container/50 focus-within:border-primary-container transition-all">
+<!-- Upload Button -->
+<button class="p-3 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container shrink-0" title="Upload document">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<!-- Text Area -->
+<textarea class="w-full bg-transparent border-none focus:ring-0 resize-none max-h-32 py-3 font-body-md text-body-md text-on-surface placeholder:text-outline outline-none" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'" placeholder="Message your AI Tutor..." rows="1" style="min-height: 48px;"></textarea>
+<!-- Voice Button -->
+<button class="p-3 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container shrink-0" title="Voice input">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<!-- Send Button -->
+<button class="p-3 bg-primary text-on-primary hover:bg-primary-container transition-colors rounded-full shrink-0 shadow-md transform hover:-translate-y-0.5 active:translate-y-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_upward</span>
+</button>
+</div>
+<div class="text-center mt-3">
+<p class="font-label-sm text-label-sm text-outline text-[10px]">AI can make mistakes. Verify important information.</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI 101 Academy | Master AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "primary-container": "#4f46e5",
+                        "secondary": "#831ada",
+                        "on-primary-fixed": "#0f0069",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d2d9f4",
+                        "surface-container-highest": "#dae2fd",
+                        "surface-container-high": "#e2e7ff",
+                        "inverse-surface": "#283044",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#4d44e3",
+                        "tertiary-container": "#006a7c",
+                        "surface": "#faf8ff",
+                        "tertiary-fixed-dim": "#4cd7f6",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "background": "#faf8ff",
+                        "surface-bright": "#faf8ff",
+                        "outline-variant": "#c7c4d8",
+                        "on-tertiary-fixed": "#001f26",
+                        "on-tertiary-container": "#93e8ff",
+                        "on-tertiary-fixed-variant": "#004e5c",
+                        "secondary-fixed": "#f0dbff",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-variant": "#dae2fd",
+                        "on-secondary-fixed": "#2c0051",
+                        "on-surface": "#131b2e",
+                        "outline": "#777587",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#00505f",
+                        "secondary-fixed-dim": "#ddb8ff",
+                        "on-background": "#131b2e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#9e41f5",
+                        "primary-fixed": "#e2dfff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-primary-container": "#dad7ff",
+                        "primary": "#3525cd",
+                        "on-secondary-fixed-variant": "#6800b4",
+                        "surface-container": "#eaedff",
+                        "on-surface-variant": "#464555",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary-fixed": "#acedff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "unit": "4px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-md": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .bento-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            border: 1px solid rgba(199, 196, 216, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .bento-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(90deg, #3525cd, #831ada);
+        }
+        .ambient-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(53, 37, 205, 0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/60 dark:bg-background/60 backdrop-blur-xl shadow-sm border-b border-outline-variant/30 transition-all duration-200 ease-in-out">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto h-16">
+<!-- Brand -->
+<a class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed flex items-center gap-2 hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">neurology</span>
+                AI 101 Academy
+            </a>
+<!-- Nav Links (Desktop) -->
+<div class="hidden md:flex items-center gap-8 font-body-md text-body-md">
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary pb-1 hover:opacity-80 transition-opacity" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary pb-1 hover:opacity-80 transition-opacity" href="#courses">Courses</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary pb-1 hover:opacity-80 transition-opacity" href="#industries">Industries</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary pb-1 hover:opacity-80 transition-opacity" href="#pricing">Pricing</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary pb-1 hover:opacity-80 transition-opacity" href="#about">About</a>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<a class="hidden md:block font-body-md text-body-md text-on-surface-variant hover:text-primary hover:opacity-80 transition-opacity" href="#">Log In</a>
+<button class="bg-primary text-on-primary font-body-md text-body-md px-6 py-2 rounded-lg hover:opacity-80 hover:-translate-y-px transition-all shadow-sm">
+                    Get Started
+                </button>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-32">
+<!-- Hero Section -->
+<section class="relative px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto pt-16 pb-24 flex flex-col items-center text-center">
+<div class="ambient-glow top-0 left-1/2 -translate-x-1/2"></div>
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-high/50 border border-outline-variant/30 font-label-md text-label-md text-primary mb-8 backdrop-blur-sm">
+<span class="material-symbols-outlined text-sm">stars</span>
+<span>New: Advanced ChatGPT Course Available</span>
+</div>
+<h1 class="font-display text-display max-w-4xl mb-6 text-on-surface leading-tight">
+                Learn Artificial Intelligence <br class="hidden md:block"/> <span class="gradient-text">from Zero</span>
+</h1>
+<p class="font-body-lg text-body-lg max-w-2xl text-on-surface-variant mb-10">
+                Master ChatGPT and modern AI tools through practical, interactive lessons. Built for beginners, designed to make you a pro.
+            </p>
+<div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+<button class="bg-primary text-on-primary font-body-md text-body-md px-8 py-3 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-md flex items-center justify-center gap-2 w-full sm:w-auto">
+                    Start Learning
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<button class="bg-surface-container-low text-on-surface font-body-md text-body-md px-8 py-3 rounded-lg border border-outline-variant/30 hover:bg-surface-container-high hover:-translate-y-0.5 transition-all w-full sm:w-auto">
+                    View Curriculum
+                </button>
+</div>
+<!-- Hero Image / Illustration -->
+<div class="w-full max-w-5xl mt-20 relative rounded-2xl overflow-hidden shadow-2xl border border-outline-variant/20 group">
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10 pointer-events-none"></div>
+<img alt="People learning AI illustration" class="w-full h-auto object-cover aspect-[16/9] md:aspect-[21/9] transition-transform duration-700 group-hover:scale-105" data-alt="A modern, high-quality vector illustration of diverse professionals learning AI. The scene shows a stylized digital classroom setting with floating UI elements representing neural networks and chat interfaces. The art style is clean, vibrant, and corporate, using the brand's primary indigo and secondary purple colors on a bright, minimalist background. The mood is optimistic and educational." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUiZk0Gitm-e_SQQuBIOhhMJLrfeWzto3FBbQ4cQ4f6yNM_C0KHUx6BmTe5y4JbAP1R9ihtZ9iLLoR3WoJadRrT6S5L-_wMY4y6zOAQMDiMMggGC6DsbkVfYyVdaDrxOAtM6YttvS7R9gMYVBtEUvnnyKs66oWpv_553sEGur147DH1CSdqSV3kD09bGvdQ5gDgKfkqlHwLadgS_PvJ7DPfLg4-_DS0n58s2RuyqAm0ZLOmbRKrg2L_6f9thzdijljgOoKuNRrFu7S"/>
+</div>
+</section>
+<!-- Stats Section -->
+<section class="border-y border-outline-variant/20 bg-surface-container-low/50 py-12 mb-32">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-outline-variant/20">
+<div class="text-center px-4">
+<div class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-2">1,000+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Students Enrolled</div>
+</div>
+<div class="text-center px-4">
+<div class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-secondary mb-2">50+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Interactive Lessons</div>
+</div>
+<div class="text-center px-4">
+<div class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-2">95%</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Satisfaction Rate</div>
+</div>
+<div class="text-center px-4">
+<div class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-secondary mb-2">24/7</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">AI Tutor Access</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 border-t border-outline-variant bg-surface-container-highest dark:bg-inverse-surface mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="col-span-1 md:col-span-1 flex flex-col gap-4">
+<a class="font-headline-md text-headline-md text-on-surface dark:text-inverse-on-surface flex items-center gap-2" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">neurology</span>
+                    AI 101
+                </a>
+<p class="font-label-sm text-label-sm text-primary dark:text-primary-fixed-dim">
+                    © 2024 AI 101 Academy. Empowering the next generation of creators.
+                </p>
+</div>
+<div class="col-span-1 md:col-span-3 flex flex-wrap justify-end gap-6 md:gap-12 mt-6 md:mt-0 items-center font-label-sm text-label-sm">
+<a class="text-primary underline hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Cookie Settings</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+</body></html>

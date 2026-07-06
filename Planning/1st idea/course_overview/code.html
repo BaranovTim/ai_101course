@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Course Overview - AI 101 Academy</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error": "#ba1a1a",
+                      "primary-container": "#4f46e5",
+                      "secondary": "#831ada",
+                      "on-primary-fixed": "#0f0069",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-tertiary": "#ffffff",
+                      "surface-dim": "#d2d9f4",
+                      "surface-container-highest": "#dae2fd",
+                      "surface-container-high": "#e2e7ff",
+                      "inverse-surface": "#283044",
+                      "on-secondary": "#ffffff",
+                      "surface-container-low": "#f2f3ff",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#4d44e3",
+                      "tertiary-container": "#006a7c",
+                      "surface": "#faf8ff",
+                      "tertiary-fixed-dim": "#4cd7f6",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "background": "#faf8ff",
+                      "surface-bright": "#faf8ff",
+                      "outline-variant": "#c7c4d8",
+                      "on-tertiary-fixed": "#001f26",
+                      "on-tertiary-container": "#93e8ff",
+                      "on-tertiary-fixed-variant": "#004e5c",
+                      "secondary-fixed": "#f0dbff",
+                      "inverse-primary": "#c3c0ff",
+                      "surface-variant": "#dae2fd",
+                      "on-secondary-fixed": "#2c0051",
+                      "on-surface": "#131b2e",
+                      "outline": "#777587",
+                      "on-error-container": "#93000a",
+                      "tertiary": "#00505f",
+                      "secondary-fixed-dim": "#ddb8ff",
+                      "on-background": "#131b2e",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "secondary-container": "#9e41f5",
+                      "primary-fixed": "#e2dfff",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "on-primary-container": "#dad7ff",
+                      "primary": "#3525cd",
+                      "on-secondary-fixed-variant": "#6800b4",
+                      "surface-container": "#eaedff",
+                      "on-surface-variant": "#464555",
+                      "error-container": "#ffdad6",
+                      "on-secondary-container": "#fffbff",
+                      "tertiary-fixed": "#acedff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "container-max": "1280px",
+                      "unit": "4px",
+                      "margin-desktop": "40px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Inter"],
+                      "label-md": ["JetBrains Mono"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-sm": ["JetBrains Mono"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "display": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        /* Custom styles for progress circle gradient */
+        .progress-gradient {
+            stroke: url(#gradient);
+        }
+        
+        /* Smooth accordion transitions */
+        .module-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 300ms ease-in-out;
+        }
+        .module-content.expanded {
+            grid-template-rows: 1fr;
+        }
+        .module-inner {
+            overflow: hidden;
+        }
+        .icon-rotate {
+            transition: transform 300ms ease;
+        }
+        .expanded .icon-rotate {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col pt-16">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 bg-surface/60 dark:bg-background/60 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm transition-all duration-200 ease-in-out">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto h-16">
+<!-- Brand -->
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">
+                AI 101 Academy
+            </div>
+<!-- Navigation Links (Desktop) -->
+<div class="hidden md:flex h-full items-center gap-8">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary hover:opacity-80 transition-opacity" href="#">Home</a>
+<!-- Active State -->
+<a class="font-body-md text-body-md text-primary dark:text-primary-fixed font-bold border-b-2 border-primary h-full flex items-center hover:opacity-80 transition-opacity" href="#">Courses</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary hover:opacity-80 transition-opacity" href="#">Industries</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary hover:opacity-80 transition-opacity" href="#">Pricing</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary hover:opacity-80 transition-opacity" href="#">About</a>
+</div>
+<!-- Actions (Desktop) -->
+<div class="hidden md:flex items-center gap-4">
+<a class="font-label-md text-label-md text-primary hover:opacity-80 transition-opacity" href="#">Log In</a>
+<a class="font-label-md text-label-md bg-primary text-on-primary px-6 py-2 rounded-lg hover:-translate-y-px shadow-sm hover:shadow-md transition-all" href="#">Get Started</a>
+</div>
+<!-- Mobile Menu Icon -->
+<button class="md:hidden text-on-surface">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative bg-surface-container-low pt-16 pb-24 border-b border-outline-variant/20 overflow-hidden">
+<!-- Decorative Background Element -->
+<div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-primary-fixed-dim/20 to-transparent pointer-events-none"></div>
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+<!-- Course Details (Left/Main) -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Badges -->
+<div class="flex flex-wrap gap-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/60 backdrop-blur-md rounded-full border border-outline-variant/30 font-label-sm text-label-sm text-on-surface uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">bar_chart</span>
+                            Intermediate
+                        </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/60 backdrop-blur-md rounded-full border border-outline-variant/30 font-label-sm text-label-sm text-on-surface uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                            4 Weeks
+                        </span>
+</div>
+<!-- Title & Description -->
+<div class="space-y-4">
+<h1 class="font-display text-display text-on-surface">Neural Networks: From Theory to Application</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                            Dive deep into the architecture of modern AI. Learn to build, train, and deploy neural networks using PyTorch, bridging the gap between mathematical foundations and real-world engineering.
+                        </p>
+</div>
+<!-- Instructor Info -->
+<div class="flex items-center gap-4 pt-4 border-t border-outline-variant/20 w-fit">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="A professional headshot of a female computer science professor with glasses, smiling warmly in front of a subtly blurred technical background with soft, natural lighting. High quality, modern corporate portrait style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBY0V_mFX5I2YXMXtEqQlIoJnprDhgnFU8BUEU2yEvi4Sm3roWofBEimtN_qGl0IWO6Re0E5jdq-UZpSEWrFNz7rdU3Tndm7wSMpW3P6wDLpuO8CXPqe4mR8WFnb1eRXRJBBOu-WYHwRIVzhCB0jEV78Jo-ebZ5RDtP8mLEwEOlpbLrFC9dM3IFJzNqIVN0BbJ_hyAsoBpbts-lKYdvAZZjoEDFgb-jFPWJg2sHIj1flKhjKXXGtG6o2AOOPyNaTbVN5GeFl79iRBML"/>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Instructor</p>
+<p class="font-label-md text-label-md text-on-surface">Dr. Sarah Chen, Ph.D.</p>
+</div>
+</div>
+</div>
+<!-- Action & Progress (Right/Sidebar) -->
+<div class="lg:col-span-4 flex flex-col items-start lg:items-end gap-8 mt-12 lg:mt-0">
+<!-- Glassmorphism Progress Widget -->
+<div class="bg-surface/80 backdrop-blur-xl border border-outline-variant/30 rounded-[16px] p-6 shadow-sm w-full max-w-sm flex items-center justify-between gap-6">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Course Progress</p>
+<p class="font-headline-md text-headline-md text-on-surface">32% Completed</p>
+</div>
+<!-- Circular Progress SVG -->
+<div class="relative w-20 h-20 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<defs>
+<lineargradient id="gradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#3525cd"></stop> <!-- Primary -->
+<stop offset="100%" stop-color="#9e41f5"></stop> <!-- Secondary Container -->
+</lineargradient>
+</defs>
+<!-- Track -->
+<circle cx="50" cy="50" fill="none" r="40" stroke="#eaedff" stroke-width="10"></circle>
+<!-- Progress -->
+<circle class="transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="40" stroke="url(#gradient)" stroke-dasharray="251.2" stroke-dashoffset="170.8" stroke-linecap="round" stroke-width="10"></circle>
+</svg>
+</div>
+</div>
+<!-- Primary Action -->
+<button class="w-full max-w-sm bg-primary text-on-primary font-headline-md text-[18px] py-4 rounded-[8px] hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(53,37,205,0.3)] transition-all duration-200 flex justify-center items-center gap-2">
+                        Continue Learning
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Course Syllabus / Modules Section -->
+<section class="max-w-[900px] mx-auto px-margin-mobile md:px-margin-desktop py-24">
+<div class="mb-12 flex items-baseline justify-between border-b border-outline-variant/30 pb-4">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Syllabus</h2>
+<span class="font-label-md text-label-md text-on-surface-variant">4 Modules • 24 Lessons</span>
+</div>
+<div class="space-y-6">
+<!-- Module 1: Expanded state example -->
+<div class="group bg-surface rounded-[16px] border border-outline-variant/30 shadow-sm overflow-hidden" data-accordion="">
+<!-- Header -->
+<button class="w-full p-6 flex justify-between items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors text-left" onclick="toggleAccordion(this)">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary">
+<span class="font-label-md text-label-md">01</span>
+</div>
+<div>
+<h3 class="font-headline-md text-[20px] text-on-surface">Foundations of Machine Learning</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">4 Lessons • 1 Quiz • 1 Assignment</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary icon-rotate transform rotate-180">expand_more</span>
+</button>
+<!-- Content (Expanded) -->
+<div class="module-content expanded">
+<div class="module-inner p-6 pt-0 border-t border-outline-variant/20 bg-surface-container-lowest">
+<!-- Connection Line Setup -->
+<div class="relative pl-5 space-y-8 mt-6 before:absolute before:inset-y-0 before:left-[27px] before:w-[2px] before:border-l-2 before:border-dashed before:border-outline-variant/40">
+<!-- Lesson Item (Video) -->
+<div class="relative flex items-start gap-6 group/lesson cursor-pointer">
+<div class="absolute -left-[14px] bg-surface-container-lowest p-1 rounded-full text-primary z-10 mt-0.5 group-hover/lesson:scale-110 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h4 class="font-body-lg text-body-lg text-on-surface font-medium group-hover/lesson:text-primary transition-colors">1.1 Linear Algebra Refresher</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant">15:30</span>
+</div>
+<p class="font-body-md text-[14px] text-on-surface-variant mt-1">Vectors, matrices, and tensor operations essential for deep learning.</p>
+</div>
+</div>
+<!-- Lesson Item (Reading) -->
+<div class="relative flex items-start gap-6 group/lesson cursor-pointer">
+<div class="absolute -left-[14px] bg-surface-container-lowest p-1 rounded-full text-primary z-10 mt-0.5 group-hover/lesson:scale-110 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">article</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h4 class="font-body-lg text-body-lg text-on-surface font-medium group-hover/lesson:text-primary transition-colors">1.2 Calculus for Gradient Descent</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant">10 Min Read</span>
+</div>
+</div>
+</div>
+<!-- Quiz Item -->
+<div class="relative flex items-start gap-6 group/lesson cursor-pointer">
+<div class="absolute -left-[14px] bg-surface-container-lowest p-1 rounded-full text-secondary z-10 mt-0.5 group-hover/lesson:scale-110 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">quiz</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h4 class="font-body-lg text-body-lg text-on-surface font-medium group-hover/lesson:text-secondary transition-colors">Knowledge Check: Math Foundations</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant">10 Questions</span>
+</div>
+</div>
+</div>
+<!-- Practical Assignment -->
+<div class="relative flex items-start gap-6 group/lesson cursor-pointer">
+<div class="absolute -left-[14px] bg-surface-container-lowest p-1 rounded-full text-tertiary-container z-10 mt-0.5 group-hover/lesson:scale-110 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h4 class="font-body-lg text-body-lg text-on-surface font-medium group-hover/lesson:text-tertiary-container transition-colors">Lab: Implementing Basic Tensors in NumPy</h4>
+<span class="font-label-sm text-label-sm bg-tertiary-container/10 text-tertiary-container px-2 py-0.5 rounded-full">Required</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Module 2: Collapsed state example -->
+<div class="group bg-surface rounded-[16px] border border-outline-variant/30 shadow-sm overflow-hidden" data-accordion="">
+<button class="w-full p-6 flex justify-between items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors text-left" onclick="toggleAccordion(this)">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full border border-outline-variant/50 flex items-center justify-center text-on-surface-variant">
+<span class="font-label-md text-label-md">02</span>
+</div>
+<div>
+<h3 class="font-headline-md text-[20px] text-on-surface">The Perceptron &amp; Forward Propagation</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">5 Lessons • 1 Quiz • 2 Assignments</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant icon-rotate">expand_more</span>
+</button>
+<div class="module-content">
+<div class="module-inner p-6 pt-0 border-t border-outline-variant/20 bg-surface-container-lowest">
+<!-- Placeholder content for demonstration -->
+<div class="py-4 text-center text-on-surface-variant font-body-md">Module content hidden. Click to expand.</div>
+</div>
+</div>
+</div>
+<!-- Module 3: Collapsed state example -->
+<div class="group bg-surface rounded-[16px] border border-outline-variant/30 shadow-sm overflow-hidden" data-accordion="">
+<button class="w-full p-6 flex justify-between items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors text-left" onclick="toggleAccordion(this)">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full border border-outline-variant/50 flex items-center justify-center text-on-surface-variant">
+<span class="font-label-md text-label-md">03</span>
+</div>
+<div>
+<h3 class="font-headline-md text-[20px] text-on-surface">Backpropagation Deep Dive</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">3 Lessons • 1 Assignment</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant icon-rotate">expand_more</span>
+</button>
+<div class="module-content">
+<div class="module-inner p-6 pt-0 border-t border-outline-variant/20 bg-surface-container-lowest"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant w-full py-12 mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<!-- Brand Column -->
+<div class="md:col-span-1 space-y-4">
+<div class="font-headline-md text-headline-md text-on-surface dark:text-inverse-on-surface">
+                    AI 101 Academy
+                </div>
+<p class="font-label-sm text-label-sm text-primary dark:text-primary-fixed-dim">
+                    © 2024 AI 101 Academy. Empowering the next generation of creators.
+                </p>
+</div>
+<!-- Links Column (Spanning remainder for simplicity based on provided JSON structure) -->
+<div class="md:col-span-3 flex flex-wrap gap-6 md:justify-end items-start mt-6 md:mt-0">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Cookie Settings</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+<!-- Minimal JS for Accordion Interaction -->
+<script>
+        function toggleAccordion(button) {
+            const container = button.nextElementSibling;
+            const icon = button.querySelector('.material-symbols-outlined:last-child');
+            
+            // Toggle expanded class which controls grid-template-rows
+            container.classList.toggle('expanded');
+            
+            // Toggle active styling on icon/header
+            if(container.classList.contains('expanded')) {
+                icon.classList.remove('text-on-surface-variant');
+                icon.classList.add('text-primary');
+            } else {
+                icon.classList.add('text-on-surface-variant');
+                icon.classList.remove('text-primary');
+            }
+        }
+    </script>
+</body></html>

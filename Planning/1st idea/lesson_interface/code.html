@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lesson Page - AI 101 Academy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error": "#ba1a1a",
+                      "primary-container": "#4f46e5",
+                      "secondary": "#831ada",
+                      "on-primary-fixed": "#0f0069",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-tertiary": "#ffffff",
+                      "surface-dim": "#d2d9f4",
+                      "surface-container-highest": "#dae2fd",
+                      "surface-container-high": "#e2e7ff",
+                      "inverse-surface": "#283044",
+                      "on-secondary": "#ffffff",
+                      "surface-container-low": "#f2f3ff",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#4d44e3",
+                      "tertiary-container": "#006a7c",
+                      "surface": "#faf8ff",
+                      "tertiary-fixed-dim": "#4cd7f6",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "background": "#faf8ff",
+                      "surface-bright": "#faf8ff",
+                      "outline-variant": "#c7c4d8",
+                      "on-tertiary-fixed": "#001f26",
+                      "on-tertiary-container": "#93e8ff",
+                      "on-tertiary-fixed-variant": "#004e5c",
+                      "secondary-fixed": "#f0dbff",
+                      "inverse-primary": "#c3c0ff",
+                      "surface-variant": "#dae2fd",
+                      "on-secondary-fixed": "#2c0051",
+                      "on-surface": "#131b2e",
+                      "outline": "#777587",
+                      "on-error-container": "#93000a",
+                      "tertiary": "#00505f",
+                      "secondary-fixed-dim": "#ddb8ff",
+                      "on-background": "#131b2e",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "secondary-container": "#9e41f5",
+                      "primary-fixed": "#e2dfff",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "on-primary-container": "#dad7ff",
+                      "primary": "#3525cd",
+                      "on-secondary-fixed-variant": "#6800b4",
+                      "surface-container": "#eaedff",
+                      "on-surface-variant": "#464555",
+                      "error-container": "#ffdad6",
+                      "on-secondary-container": "#fffbff",
+                      "tertiary-fixed": "#acedff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "container-max": "1280px",
+                      "unit": "4px",
+                      "margin-desktop": "40px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "JetBrains Mono"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "display": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        /* Base styles to ensure consistency */
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.outline-variant');
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex">
+<!-- Shared Component: SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/20 flex flex-col h-full py-6 z-40 hidden md:flex">
+<!-- Brand -->
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">neurology</span>
+</div>
+<span class="font-headline-md text-headline-md font-extrabold text-primary">AI 101 Academy</span>
+</div>
+<!-- Header Profile -->
+<div class="px-6 mb-6">
+<div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-highest">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-variant flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A brightly lit, high-quality professional headshot of a young student in a modern minimalist tech environment, wearing a neutral colored shirt, looking optimistic and focused. Soft glowing geometric background elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmhwJ5z7HF6D4bIkTBR-TZG2U-Tm2ypu4EHqH37fUpZmJB59TuygPc_q1H_6zBKONdkhPFKbgDGTfi-tY21LjHbZyWyH9WpMABJpbcbIfC4qUEwohwvwzgmow5fmhCwayGdEU3Ve3eJB7qp2ea5tTX2EtARpwrfNbovaWpoExSzSOWetNwRNGQsaYZ3ksiTYcExsF7vKtBVGYaN0aq0islJyKmWt5-uWi2nIzS4x_KQ07CkxAOcPotE0GCuu3gRjiX6XioSWVOVsFD"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Welcome back</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">AI Apprentice</p>
+</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col gap-1 px-4 overflow-y-auto">
+<!-- Dashboard -->
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- My Learning (ACTIVE) -->
+<a class="bg-secondary-container text-on-secondary-container rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="font-label-md text-label-md">My Learning</span>
+</a>
+<!-- AI Tutor -->
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-label-md text-label-md">AI Tutor</span>
+</a>
+<!-- Certificates -->
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-label-md text-label-md">Certificates</span>
+</a>
+<!-- Settings -->
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-colors active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+<!-- CTA & Footer Links -->
+<div class="px-4 mt-auto flex flex-col gap-4">
+<button class="w-full mx-2 py-3 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:opacity-90 transition-opacity active:scale-95 shadow-sm">
+                Upgrade to Pro
+            </button>
+<div class="flex flex-col gap-1 border-t border-outline-variant/20 pt-4 mx-2">
+<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg px-2 py-2 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="font-label-md text-label-md">Help Center</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg px-2 py-2 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 bg-surface min-h-screen relative">
+<!-- Top Utility Bar (Mobile Nav Toggle + Breadcrumbs) -->
+<header class="h-16 flex items-center justify-between px-margin-mobile md:px-margin-desktop sticky top-0 bg-surface/80 backdrop-blur-md z-30 border-b border-outline-variant/10">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-on-surface p-2 rounded-md hover:bg-surface-container">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<nav class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Courses</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Neural Networks 101</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface font-semibold">Lesson 3</span>
+</nav>
+</div>
+<!-- Minimal Progress indicator in header -->
+<div class="hidden md:flex items-center gap-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Course Progress: 45%</span>
+<div class="w-32 h-2 rounded-full bg-surface-container-high overflow-hidden">
+<div class="h-full bg-secondary w-[45%] rounded-full"></div>
+</div>
+</div>
+</header>
+<!-- Main Layout Grid -->
+<div class="p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto grid grid-cols-1 xl:grid-cols-12 gap-gutter">
+<!-- Left Column: Video & Lesson Content (Span 8) -->
+<div class="xl:col-span-8 flex flex-col gap-8">
+<!-- Video Player Section -->
+<section class="flex flex-col gap-4">
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Activation Functions Explained</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Understanding how neural networks make decisions through non-linear transformations.</p>
+</div>
+</div>
+<!-- Video Container -->
+<div class="w-full aspect-video rounded-xl bg-inverse-surface relative overflow-hidden shadow-md group cursor-pointer border border-outline-variant/10">
+<!-- Placeholder Image for Video Poster -->
+<div class="w-full h-full bg-cover bg-center opacity-80 group-hover:opacity-100 transition-opacity duration-300" data-alt="A striking digital visualization of a glowing neural network activation function graph (Sigmoid curve) displayed on a high-end monitor in a minimalist, bright white learning studio. The lighting is pristine, high-key, and professional, emphasizing a modern light-mode tech aesthetic with deep blacks, pristine whites, and intense accents of vibrant purple and blue. The mood is serene, highly focused, and technologically advanced." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAPgE_J1aicyFiEp8krahHyuJM2jfZGz3tvgzNHYtDmEOvn6BTbazlTIycFWGk1VHjx_II1MYE7HmQ32O4a8NCeha5nBcIdaaxaVB2bcA1G7KOp_TNSwK5EKOIieYMRvWTpxrbVIBq0IHwodPLqWoQulBQMqQW7mtcuwFlXFHklw8fXHHVgMwrFIyW956r5uBf5dP9ZIJs7zMnoTCY1RobbgpxIJ2MkG4qOC6FzGWCksZ6_UZdM4Gcb-_A6ooZse-ZlhonwA5HtK81J')"></div>
+<!-- Play Button Overlay -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-20 h-20 rounded-full bg-surface/30 backdrop-blur-md flex items-center justify-center border border-surface/50 group-hover:scale-110 transition-transform duration-300">
+<div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.5)]">
+<span class="material-symbols-outlined text-[36px] text-on-primary pl-1" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+<!-- Video Controls Scrim (Visual only) -->
+<div class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+<div class="w-full flex items-center justify-between gap-4">
+<div class="flex items-center gap-3 text-white">
+<span class="material-symbols-outlined text-[20px]">pause</span>
+<span class="material-symbols-outlined text-[20px]">volume_up</span>
+<span class="font-label-sm text-label-sm">04:12 / 12:45</span>
+</div>
+<div class="flex-1 h-1 bg-white/30 rounded-full relative">
+<div class="absolute left-0 top-0 h-full w-[33%] bg-primary rounded-full"></div>
+<div class="absolute left-[33%] top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"></div>
+</div>
+<div class="flex items-center gap-3 text-white">
+<span class="material-symbols-outlined text-[20px]">closed_caption</span>
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="material-symbols-outlined text-[20px]">fullscreen</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Content Tabs & Bento Grid -->
+<section class="flex flex-col gap-6">
+<!-- Tab Navigation -->
+<div class="flex items-center gap-8 border-b border-outline-variant/30 px-2">
+<button class="pb-3 border-b-2 border-primary font-label-md text-label-md text-primary font-semibold transition-colors">Lesson Notes</button>
+<button class="pb-3 border-b-2 border-transparent font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Interactive Examples</button>
+<button class="pb-3 border-b-2 border-transparent font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Practice Exercises</button>
+</div>
+<!-- Notes Content Area -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Key Concept Card -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 shadow-sm flex flex-col gap-3">
+<div class="flex items-center gap-2 text-secondary">
+<span class="material-symbols-outlined text-[20px]">lightbulb</span>
+<h3 class="font-label-md text-label-md uppercase tracking-wider font-bold">Key Concept</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed">
+                                Without activation functions, a neural network is just a linear regression model. They introduce <strong>non-linearity</strong>, allowing the network to learn complex patterns and make distinct decisions.
+                            </p>
+</div>
+<!-- Code Snippet Card -->
+<div class="bg-inverse-surface rounded-xl p-6 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-sm text-label-sm text-inverse-on-surface opacity-70">Python - ReLU Implementation</span>
+<button class="text-inverse-on-surface opacity-50 hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<pre class="font-label-md text-label-md text-secondary-fixed-dim overflow-x-auto"><code>def relu(x):
+    return max(0, x)
+
+# Applying to an array
+output = [relu(val) for val in inputs]</code></pre>
+</div>
+<!-- Main Text Area (Spans full width) -->
+<div class="md:col-span-2 prose prose-slate max-w-none pt-4">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4">Common Functions Overview</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">
+                                In modern deep learning, the choice of activation function can significantly impact the training speed and final performance of your model. Below are the three most critical functions you will encounter.
+                            </p>
+<ul class="flex flex-col gap-4 mt-6">
+<li class="flex gap-4 items-start p-4 rounded-lg bg-surface-container border border-outline-variant/20">
+<div class="w-8 h-8 rounded bg-surface flex items-center justify-center text-primary flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-[18px]">show_chart</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface font-bold mb-1">Sigmoid</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Squashes values between 0 and 1. Historically popular but suffers from the vanishing gradient problem in deep networks. Best used for binary classification output layers.</p>
+</div>
+</li>
+<li class="flex gap-4 items-start p-4 rounded-lg bg-surface-container border border-outline-variant/20">
+<div class="w-8 h-8 rounded bg-surface flex items-center justify-center text-secondary flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-[18px]">timeline</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface font-bold mb-1">ReLU (Rectified Linear Unit)</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Outputs x if x &gt; 0, else 0. The default choice for hidden layers due to its computational efficiency and resistance to vanishing gradients.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Navigation Buttons (Prev/Next) -->
+<section class="mt-8 pt-8 border-t border-outline-variant/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+<button class="w-full sm:w-auto px-6 py-3 rounded-lg bg-surface-container-high text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                        Previous: Weights &amp; Biases
+                    </button>
+<button class="w-full sm:w-auto px-8 py-3 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:opacity-90 transition-opacity active:-translate-y-px shadow-[0_4px_14px_0_rgba(131,26,218,0.39)] flex items-center justify-center gap-2">
+                        Complete &amp; Continue
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</section>
+<!-- Extra breathing room at bottom -->
+<div class="h-24"></div>
+</div>
+<!-- Right Column: Progress Sidebar & Lesson List (Span 4) -->
+<div class="xl:col-span-4 hidden xl:block">
+<div class="sticky top-24 flex flex-col gap-6">
+<!-- Course Info Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-5 shadow-sm">
+<div class="flex items-start justify-between mb-4">
+<div>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest font-bold">Module 2</span>
+<h3 class="font-headline-md text-headline-md text-on-surface text-[18px] mt-1">Core Architecture</h3>
+</div>
+<div class="w-10 h-10 rounded-full border-4 border-surface-container flex items-center justify-center relative">
+<!-- Fake SVG Progress ring -->
+<svg class="w-full h-full absolute -rotate-90 text-primary" viewbox="0 0 36 36">
+<path class="stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="60, 100" stroke-width="4"></path>
+</svg>
+<span class="font-label-sm text-label-sm text-on-surface text-[10px] font-bold z-10">2/5</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Master the fundamental building blocks of neural networks before moving to advanced topologies.</p>
+</div>
+<!-- Lesson List (Notion Style Connection Lines) -->
+<div class="pl-2">
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-6 uppercase tracking-wider">Lessons</h4>
+<div class="flex flex-col relative">
+<!-- Completed Item -->
+<div class="relative border-l-2 border-primary ml-3 pl-6 pb-8 group cursor-pointer">
+<div class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-primary flex items-center justify-center ring-4 ring-surface">
+<span class="material-symbols-outlined text-on-primary text-[12px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="-mt-1">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Lesson 1</p>
+<h5 class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">The Perceptron Model</h5>
+<div class="flex items-center gap-2 mt-2 opacity-60">
+<span class="material-symbols-outlined text-[14px]">play_circle</span>
+<span class="font-label-sm text-label-sm text-[11px]">08:30</span>
+</div>
+</div>
+</div>
+<!-- Completed Item -->
+<div class="relative border-l-2 border-primary ml-3 pl-6 pb-8 group cursor-pointer">
+<div class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-primary flex items-center justify-center ring-4 ring-surface">
+<span class="material-symbols-outlined text-on-primary text-[12px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="-mt-1">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Lesson 2</p>
+<h5 class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Weights &amp; Biases</h5>
+<div class="flex items-center gap-2 mt-2 opacity-60">
+<span class="material-symbols-outlined text-[14px]">play_circle</span>
+<span class="font-label-sm text-label-sm text-[11px]">11:15</span>
+</div>
+</div>
+</div>
+<!-- Active Item -->
+<div class="relative border-l-2 border-dashed border-outline-variant/40 ml-3 pl-6 pb-8">
+<div class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-surface border-2 border-primary flex items-center justify-center ring-4 ring-surface">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+</div>
+<div class="-mt-1 bg-surface-container p-3 rounded-lg border border-primary/20 -ml-2">
+<p class="font-label-sm text-label-sm text-primary font-bold mb-1">Lesson 3 (Current)</p>
+<h5 class="font-label-md text-label-md text-on-surface font-bold">Activation Functions</h5>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[14px]">play_circle</span>
+<span class="font-label-sm text-label-sm text-[11px]">12:45</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">article</span>
+<span class="font-label-sm text-label-sm text-[11px]">Notes</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Future Item -->
+<div class="relative border-l-2 border-dashed border-outline-variant/40 ml-3 pl-6 pb-8 group cursor-not-allowed opacity-60">
+<div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-surface border-2 border-outline-variant ring-4 ring-surface"></div>
+<div class="-mt-1">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Lesson 4</p>
+<h5 class="font-label-md text-label-md text-on-surface">Loss Functions &amp; Cost</h5>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="font-label-sm text-label-sm text-[11px]">Locked</span>
+</div>
+</div>
+</div>
+<!-- Future Item (Last, no border) -->
+<div class="relative ml-3 pl-6 group cursor-not-allowed opacity-60">
+<div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-surface border-2 border-outline-variant ring-4 ring-surface"></div>
+<div class="-mt-1">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Lesson 5</p>
+<h5 class="font-label-md text-label-md text-on-surface">Backpropagation Basics</h5>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="font-label-sm text-label-sm text-[11px]">Locked</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating AI Assistant Button (Overlay) -->
+<div class="fixed bottom-8 right-8 z-50 flex flex-col items-end gap-3 group">
+<!-- Tooltip/Prompt bubble -->
+<div class="bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm py-2 px-4 rounded-xl rounded-br-none shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 max-w-[200px] pointer-events-none">
+            Stuck on ReLU? Ask the AI Tutor.
+        </div>
+<!-- FAB Button -->
+<button class="w-16 h-16 rounded-2xl bg-tertiary-container text-on-tertiary-container shadow-[0_8px_30px_rgb(0,106,124,0.3)] flex items-center justify-center hover:-translate-y-1 hover:shadow-[0_12px_40px_rgb(0,106,124,0.4)] transition-all duration-300 relative overflow-hidden">
+<!-- Subtle gradient shine effect inside button -->
+<div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent translate-y-full group-hover:translate-y-[-100%] transition-transform duration-700 ease-in-out"></div>
+<span class="material-symbols-outlined text-[32px]">smart_toy</span>
+</button>
+</div>
+</body></html>

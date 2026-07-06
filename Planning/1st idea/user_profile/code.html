@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI 101 Academy - Student Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "primary-container": "#4f46e5",
+                        "secondary": "#831ada",
+                        "on-primary-fixed": "#0f0069",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d2d9f4",
+                        "surface-container-highest": "#dae2fd",
+                        "surface-container-high": "#e2e7ff",
+                        "inverse-surface": "#283044",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#4d44e3",
+                        "tertiary-container": "#006a7c",
+                        "surface": "#faf8ff",
+                        "tertiary-fixed-dim": "#4cd7f6",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "background": "#faf8ff",
+                        "surface-bright": "#faf8ff",
+                        "outline-variant": "#c7c4d8",
+                        "on-tertiary-fixed": "#001f26",
+                        "on-tertiary-container": "#93e8ff",
+                        "on-tertiary-fixed-variant": "#004e5c",
+                        "secondary-fixed": "#f0dbff",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-variant": "#dae2fd",
+                        "on-secondary-fixed": "#2c0051",
+                        "on-surface": "#131b2e",
+                        "outline": "#777587",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#00505f",
+                        "secondary-fixed-dim": "#ddb8ff",
+                        "on-background": "#131b2e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#9e41f5",
+                        "primary-fixed": "#e2dfff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-primary-container": "#dad7ff",
+                        "primary": "#3525cd",
+                        "on-secondary-fixed-variant": "#6800b4",
+                        "surface-container": "#eaedff",
+                        "on-surface-variant": "#464555",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary-fixed": "#acedff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "unit": "4px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-md": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    },
+                    boxShadow: {
+                        'level-1': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                        'level-2': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1), 0 0 20px -5px var(--tw-shadow-color)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+        }
+        .connection-line {
+            position: relative;
+        }
+        .connection-line::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 24px;
+            bottom: -24px;
+            width: 2px;
+            border-left: 2px dashed theme('colors.outline-variant');
+            opacity: 0.5;
+        }
+        .connection-line:last-child::before {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar (Responsive, Hidden on Mobile/Desktop conditionally, but for this profile view we might prefer the SideNav as main, but JSON rules apply. Since this is an internal 'app' view, let's use SideNavBar on desktop, and maybe TopNav for mobile. Wait, instructions say: On MOBILE prohibit top-row text links and use BottomNavBar. On WEB hide BottomNavBar and use full nav cluster in TopAppBar. Wait, SideNav exists. Let's use SideNav for Web, BottomNav for Mobile? The instruction says: "On WEB (`hidden md:flex`), hide the BottomNavBar and use the full nav cluster in the TopAppBar." Wait, if TopAppBar and SideNavBar are both defined, let's follow the SideNavBar for the app shell, as it has "Settings" which is the active state.) -->
+<!-- We will use SideNavBar for md+, and BottomNavBar (we need to construct) for mobile. -->
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 py-6 bg-surface-container-low border-r border-outline-variant/20 z-40">
+<div class="px-6 mb-8 flex items-center gap-3">
+<span class="font-headline-md text-headline-md font-extrabold text-primary">AI 101 Academy</span>
+</div>
+<div class="px-6 mb-8 flex items-center gap-4">
+<img class="w-10 h-10 rounded-full object-cover shadow-sm" data-alt="A small, circular avatar portrait of a young professional student in a brightly lit modern office setting, wearing casual smart clothing. Soft natural lighting, highly detailed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuJr-vEvdejbFNBS1gDg1MP1t4o1lSrx2UkyrdOTaxIh3Hbz_j7FYYjJTJW9nrIxbL6-ulz-Mpx47upSamLmSiGg23DssrAn7yUf7cSJPsyqQYuSJXMBwfEhJ9UMKxh7pt26-i-Cf7O_P9mnE9sPgw76b5QAlizJw-XPjIZjm5YZ7xm1qdubnISDyGlwq_CepieAFnYihlE9ztJNkgEz-VFcL9-3GgzXww-ZyZUWdoDEFTzN-bu8upV4OaSQRlU2lPhR-aR7W7c77_"/>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Welcome back</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">AI Apprentice</p>
+</div>
+</div>
+<ul class="flex-1 px-4 space-y-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 transition-colors group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 transition-colors group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">school</span>
+<span class="font-label-md text-label-md">My Learning</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 transition-colors group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">smart_toy</span>
+<span class="font-label-md text-label-md">AI Tutor</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 transition-colors group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">verified</span>
+<span class="font-label-md text-label-md">Certificates</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container rounded-lg mx-2 my-1 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-md text-label-md font-bold">Settings</span>
+</a>
+</li>
+</ul>
+<div class="px-6 mb-6">
+<button class="w-full bg-primary-container text-on-primary font-label-md text-label-md py-3 rounded-lg shadow-level-1 hover:-translate-y-px hover:shadow-level-2 shadow-primary/20 transition-all">
+                Upgrade to Pro
+            </button>
+</div>
+<div class="px-4 border-t border-outline-variant/20 pt-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 transition-colors" href="#">
+<span class="material-symbols-outlined text-outline">help</span>
+<span class="font-label-md text-label-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 transition-colors" href="#">
+<span class="material-symbols-outlined text-outline">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Mobile Nav (Constructed based on rules for 'Profile/Settings' view, suppressing FAB) -->
+<nav class="md:hidden fixed bottom-0 w-full bg-surface-container-lowest border-t border-outline-variant/20 pb-safe z-50 flex justify-around items-center h-16 px-4">
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-[10px]">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-sm text-[10px]">Learning</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-sm text-[10px] font-bold">Profile</span>
+</a>
+</nav>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen pb-24 md:pb-12 pt-8 md:pt-12 px-margin-mobile md:px-gutter max-w-container-max mx-auto">
+<!-- Header / Profile Picture -->
+<header class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
+<div class="flex items-center gap-6">
+<div class="relative group cursor-pointer">
+<img class="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover shadow-level-1 border-4 border-surface-container-lowest" data-alt="A close-up profile picture of a diverse student in a modern, well-lit environment. High resolution, bright lighting, clear focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdZ3nr3c36bM6OycQz4ip6nFM5B1t7M3AxzqShkY-FtxN5QquouV0SkPxtYtC9bEvpkszJZwRpvb8w-hjl-maHtlsZ1cKUg3uGKFMz2aAp3bZQDVuus6U2eSoA52avsGGBAYq8hU5nDT0PhlXZQX6w2cekzEvadaU7qLhsovdlN4djCxVlK6tNhD_3Lgzzferau16riEr5mQXUF52JxXw0RMKnocnO6CxsM_F9rf9sdbIgHYN-5eZg79adS2PiPrXwldR2fRJRYNHh"/>
+<div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">photo_camera</span>
+</div>
+</div>
+<div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-1">Alex Morgan</h1>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">mail</span>
+                        alex.morgan@example.com
+                    </p>
+<div class="mt-3 flex gap-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-label-md bg-secondary-fixed text-on-secondary-fixed">PRO MEMBER</span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-label-md bg-tertiary-fixed text-on-tertiary-fixed">AI APPRENTICE</span>
+</div>
+</div>
+</div>
+<div class="w-full md:w-auto">
+<button class="w-full md:w-auto px-6 py-2.5 bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-md text-label-md rounded-lg transition-colors border border-outline-variant/30 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">edit</span>
+                    Edit Profile
+                </button>
+</div>
+</header>
+<!-- Bento Grid Layout for Dashboard Content -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Learning Statistics (Spans 2 columns on desktop) -->
+<section class="md:col-span-2 bg-surface-container-lowest rounded-xl shadow-level-1 border border-outline-variant/20 p-6">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">bar_chart</span>
+                    Learning Statistics
+                </h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="p-4 bg-surface-container-low rounded-lg text-center">
+<p class="font-display text-display text-primary-container mb-1">42</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Hours Learned</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg text-center">
+<p class="font-display text-display text-secondary mb-1">12</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Courses Finished</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg text-center">
+<p class="font-display text-display text-tertiary-container mb-1">8</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Badges Earned</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg text-center">
+<p class="font-display text-display text-primary mb-1">15</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Day Streak</p>
+</div>
+</div>
+<!-- Badges Row -->
+<div class="mt-8">
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-4 uppercase tracking-wider">Recent Badges</h3>
+<div class="flex flex-wrap gap-4">
+<div class="w-16 h-16 rounded-full bg-surface-container-high border-2 border-primary/20 flex items-center justify-center tooltip-trigger" title="First Neural Net">
+<span class="material-symbols-outlined text-2xl text-primary">psychology</span>
+</div>
+<div class="w-16 h-16 rounded-full bg-surface-container-high border-2 border-secondary/20 flex items-center justify-center" title="Prompt Engineer">
+<span class="material-symbols-outlined text-2xl text-secondary">chat_bubble</span>
+</div>
+<div class="w-16 h-16 rounded-full bg-surface-container-high border-2 border-tertiary/20 flex items-center justify-center" title="Python Basics">
+<span class="material-symbols-outlined text-2xl text-tertiary-container">terminal</span>
+</div>
+<div class="w-16 h-16 rounded-full bg-surface-container border-2 border-outline-variant/30 flex items-center justify-center opacity-50" title="Locked: Advanced Vision">
+<span class="material-symbols-outlined text-2xl text-outline">lock</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Subscription Status -->
+<section class="bg-gradient-to-br from-primary-container to-secondary rounded-xl shadow-level-1 p-6 text-on-primary flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-4">
+<h2 class="font-headline-md text-headline-md text-on-primary font-bold">Pro Plan</h2>
+<span class="material-symbols-outlined text-3xl opacity-80">workspace_premium</span>
+</div>
+<p class="font-body-md text-body-md text-primary-fixed-dim mb-6">Your subscription is active and auto-renews on Oct 12, 2024.</p>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-primary-fixed">
+<span class="material-symbols-outlined text-sm">check_circle</span> Unlimited AI Tutor
+                        </li>
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-primary-fixed">
+<span class="material-symbols-outlined text-sm">check_circle</span> Advanced Analytics
+                        </li>
+<li class="flex items-center gap-2 font-label-sm text-label-sm text-primary-fixed">
+<span class="material-symbols-outlined text-sm">check_circle</span> Certificate Generation
+                        </li>
+</ul>
+</div>
+<button class="w-full bg-white/20 hover:bg-white/30 text-white font-label-md text-label-md py-2.5 rounded-lg transition-colors backdrop-blur-sm border border-white/10">
+                    Manage Billing
+                </button>
+</section>
+<!-- Learning Goals Tracker (Spans 1 col) -->
+<section class="bg-surface-container-lowest rounded-xl shadow-level-1 border border-outline-variant/20 p-6 flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">target</span>
+                    Weekly Goal
+                </h2>
+<div class="flex-1 flex flex-col items-center justify-center mb-6 relative">
+<!-- Circular Progress -->
+<svg class="w-32 h-32 transform -rotate-90" viewbox="0 0 100 100">
+<circle class="text-surface-container-high" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary-container" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="62.8" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-md text-headline-md text-on-surface">3/4</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Hours</span>
+</div>
+</div>
+<p class="text-center font-body-md text-body-md text-on-surface-variant mb-4">You're almost there! 1 more hour to hit your weekly target.</p>
+<button class="w-full bg-[#9333EA] hover:bg-[#7e22ce] text-white font-label-md text-label-md py-3 rounded-lg shadow-level-1 transition-all">
+                    Continue Lesson
+                </button>
+</section>
+<!-- Completed Courses (Spans 2 cols) -->
+<section class="md:col-span-2 bg-surface-container-lowest rounded-xl shadow-level-1 border border-outline-variant/20 p-6">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">task_alt</span>
+                        Completed Courses
+                    </h2>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="space-y-4">
+<!-- Course Item 1 -->
+<div class="flex items-center gap-4 p-4 rounded-lg bg-surface hover:bg-surface-container-low transition-colors border border-outline-variant/10 connection-line">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">robot_2</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-body-md text-body-md font-semibold text-on-surface truncate">Introduction to Large Language Models</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Completed on Oct 1, 2024</p>
+</div>
+<button class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" title="Download Certificate">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+<!-- Course Item 2 -->
+<div class="flex items-center gap-4 p-4 rounded-lg bg-surface hover:bg-surface-container-low transition-colors border border-outline-variant/10 connection-line">
+<div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary">code</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-body-md text-body-md font-semibold text-on-surface truncate">Python Data Structures for AI</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Completed on Sep 15, 2024</p>
+</div>
+<button class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" title="Download Certificate">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+<!-- Course Item 3 -->
+<div class="flex items-center gap-4 p-4 rounded-lg bg-surface hover:bg-surface-container-low transition-colors border border-outline-variant/10 connection-line">
+<div class="w-12 h-12 rounded-lg bg-tertiary-container/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary-container">analytics</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-body-md text-body-md font-semibold text-on-surface truncate">Machine Learning Fundamentals</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Completed on Aug 28, 2024</p>
+</div>
+<button class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" title="Download Certificate">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Account Settings Snippet -->
+<section class="md:col-span-3 bg-surface-container-lowest rounded-xl shadow-level-1 border border-outline-variant/20 p-6 mt-6">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">manage_accounts</span>
+                    Account Preferences
+                </h2>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface">Full Name</label>
+<input class="w-full bg-surface border border-outline-variant/50 rounded-lg px-4 py-2 text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:shadow-[0_0_0_4px_rgba(79,70,229,0.1)] outline-none transition-all" type="text" value="Alex Morgan"/>
+</div>
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface">Email Address</label>
+<input class="w-full bg-surface border border-outline-variant/50 rounded-lg px-4 py-2 text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:shadow-[0_0_0_4px_rgba(79,70,229,0.1)] outline-none transition-all" type="email" value="alex.morgan@example.com"/>
+</div>
+<div class="space-y-2 md:col-span-2">
+<label class="block font-label-md text-label-md text-on-surface">Timezone</label>
+<select class="w-full md:w-1/2 bg-surface border border-outline-variant/50 rounded-lg px-4 py-2 text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:shadow-[0_0_0_4px_rgba(79,70,229,0.1)] outline-none transition-all">
+<option>Pacific Time (PT)</option>
+<option>Eastern Time (ET)</option>
+<option>Coordinated Universal Time (UTC)</option>
+</select>
+</div>
+<div class="md:col-span-2 flex justify-end gap-4 mt-4">
+<button class="px-6 py-2 rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-high transition-colors" type="button">Cancel</button>
+<button class="px-6 py-2 bg-primary-container text-on-primary font-label-md text-label-md rounded-lg shadow-level-1 hover:shadow-level-2 transition-all" type="button">Save Changes</button>
+</div>
+</form>
+</section>
+</div>
+</main>
+</body></html>
