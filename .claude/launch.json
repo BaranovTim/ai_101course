@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ai101",
+      "runtimeExecutable": "/Users/timothee8baranov/Desktop/projects/ai_101course/.venv/bin/python",
+      "runtimeArgs": ["manage.py", "runserver", "127.0.0.1:8000"],
+      "port": 8000
+    }
+  ]
+}

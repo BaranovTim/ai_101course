@@ -1,0 +1,46 @@
+{% extends "app_base.html" %}
+{% block title %}Certificates | AI 101 Academy{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-4xl px-4 py-10 sm:px-8">
+  <h1 class="text-3xl font-extrabold tracking-tight">Certificates</h1>
+  <p class="mt-1 text-on-surface-variant">Your achievements, ready to share with the world.</p>
+
+  {% if certs %}
+  <div class="mt-8 space-y-6">
+    {% for cert in certs %}
+    <div class="overflow-hidden rounded-3xl border border-outline-variant/50 bg-white shadow-card">
+      <div class="bg-gradient-to-r from-primary to-secondary p-1"></div>
+      <div class="flex flex-wrap items-center justify-between gap-6 p-8">
+        <div class="flex items-center gap-5">
+          <span class="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-container">
+            <span class="material-symbols-outlined filled text-4xl text-secondary">workspace_premium</span>
+          </span>
+          <div>
+            <h2 class="text-xl font-bold">{{ cert.course.title }}</h2>
+            <p class="mt-1 font-mono text-xs text-on-surface-variant">Issued {{ cert.issued_at|date:"F j, Y" }} · ID {{ cert.uid|truncatechars:13 }}</p>
+          </div>
+        </div>
+        <a href="{% url 'certificate_download' cert.uid %}" class="inline-flex items-center gap-2 rounded-lg bg-primary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
+          <span class="material-symbols-outlined text-lg">download</span> Download PDF
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="mt-8 rounded-3xl border-2 border-dashed border-outline-variant bg-white p-12 text-center">
+    <span class="material-symbols-outlined text-5xl text-outline">workspace_premium</span>
+    <h2 class="mt-4 text-xl font-bold">No certificates yet</h2>
+    <p class="mx-auto mt-2 max-w-md text-on-surface-variant">
+      Complete all lessons in the course to earn your certificate.
+      {% if total %}You're {{ percent }}% of the way there ({{ done }}/{{ total }} lessons).{% endif %}
+    </p>
+    {% if course %}
+    <a href="{% url 'my_learning' course.slug %}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
+      Keep Learning <span class="material-symbols-outlined text-lg">arrow_forward</span>
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

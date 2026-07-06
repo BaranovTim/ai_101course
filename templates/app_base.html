@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}AI 101 Academy{% endblock %}</title>
+  {% include "partials/head.html" %}
+</head>
+<body class="bg-background text-on-surface antialiased">
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <aside class="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-outline-variant/40 bg-surface-container-low lg:flex">
+    <div class="flex items-center gap-2 px-6 py-6">
+      <span class="material-symbols-outlined filled text-primary text-3xl">neurology</span>
+      <span class="text-xl font-bold tracking-tight">AI 101</span>
+    </div>
+    <div class="flex items-center gap-3 px-6 pb-6">
+      <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-sm font-bold text-white">
+        {{ user.first_name|default:user.username|slice:":1"|upper }}
+      </div>
+      <div>
+        <p class="text-sm font-semibold leading-tight">Welcome back</p>
+        <p class="font-mono text-xs text-on-surface-variant">{{ user.first_name|default:user.username }}</p>
+      </div>
+    </div>
+    <nav class="flex-1 space-y-1 px-4">
+      {% url 'dashboard' as dash_url %}
+      <a href="{{ dash_url }}" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {% if request.path == dash_url %}bg-primary-container text-white shadow-card{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
+        <span class="material-symbols-outlined text-xl">grid_view</span> Dashboard
+      </a>
+      {% if course %}
+      <a href="{% url 'my_learning' course.slug %}" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {% if '/learn/' in request.path %}bg-primary-container text-white shadow-card{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
+        <span class="material-symbols-outlined text-xl">school</span> My Learning
+      </a>
+      {% endif %}
+      {% url 'tutor' as tutor_url %}
+      <a href="{{ tutor_url }}" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {% if request.path == tutor_url %}bg-primary-container text-white shadow-card{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
+        <span class="material-symbols-outlined text-xl">smart_toy</span> AI Tutor
+      </a>
+      {% url 'certificates' as certs_url %}
+      <a href="{{ certs_url }}" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {% if request.path == certs_url %}bg-primary-container text-white shadow-card{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
+        <span class="material-symbols-outlined text-xl">workspace_premium</span> Certificates
+      </a>
+      {% url 'settings' as settings_url %}
+      <a href="{{ settings_url }}" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition {% if request.path == settings_url %}bg-primary-container text-white shadow-card{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
+        <span class="material-symbols-outlined text-xl">settings</span> Settings
+      </a>
+    </nav>
+    <div class="space-y-1 px-4 pb-6">
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-on-surface-variant transition hover:bg-surface-container">
+          <span class="material-symbols-outlined text-xl">logout</span> Logout
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- Mobile top bar -->
+  <div class="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-outline-variant/40 bg-white/80 px-4 backdrop-blur-xl lg:hidden">
+    <a href="{% url 'dashboard' %}" class="flex items-center gap-2">
+      <span class="material-symbols-outlined filled text-primary text-2xl">neurology</span>
+      <span class="font-bold">AI 101</span>
+    </a>
+    <div class="flex items-center gap-4 text-on-surface-variant">
+      <a href="{% url 'dashboard' %}"><span class="material-symbols-outlined">grid_view</span></a>
+      {% if course %}<a href="{% url 'my_learning' course.slug %}"><span class="material-symbols-outlined">school</span></a>{% endif %}
+      <a href="{% url 'tutor' %}"><span class="material-symbols-outlined">smart_toy</span></a>
+      <a href="{% url 'certificates' %}"><span class="material-symbols-outlined">workspace_premium</span></a>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="min-w-0 flex-1 pt-14 lg:ml-64 lg:pt-0">
+    {% if messages %}
+      <div class="mx-auto max-w-5xl px-4 pt-6 sm:px-8">
+        {% for message in messages %}
+          <div class="mb-2 rounded-lg border border-primary/20 bg-surface-container-low px-4 py-3 text-sm">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

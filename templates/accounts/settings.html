@@ -1,0 +1,43 @@
+{% extends "app_base.html" %}
+{% block title %}Settings | AI 101 Academy{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-3xl px-4 py-10 sm:px-8">
+  <h1 class="text-3xl font-extrabold tracking-tight">Settings</h1>
+  <p class="mt-1 text-on-surface-variant">Manage your profile and learning preferences.</p>
+
+  <div class="mt-8 rounded-2xl border border-outline-variant/60 bg-white p-8 shadow-card">
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium">First name</label>
+          {{ form.first_name }}
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium">Last name</label>
+          {{ form.last_name }}
+        </div>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">Occupation</label>
+        {{ form.occupation }}
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">District</label>
+        {{ form.district }}
+        <p class="mt-1 font-mono text-xs text-on-surface-variant">e.g. George Town, West Bay, Bodden Town</p>
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">Learning goal</label>
+        {{ form.learning_goal }}
+      </div>
+      <button type="submit" class="rounded-lg bg-primary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">Save Changes</button>
+    </form>
+  </div>
+
+  <div class="mt-6 rounded-2xl border border-outline-variant/60 bg-white p-8 shadow-card">
+    <h2 class="font-bold">Account</h2>
+    <p class="mt-1 text-sm text-on-surface-variant">Signed in as <span class="font-mono">{{ user.username }}</span> · {{ user.email }}</p>
+  </div>
+</div>
+{% endblock %}

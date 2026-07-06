@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}AI 101 Academy | Learn AI in the Cayman Islands{% endblock %}</title>
+  {% include "partials/head.html" %}
+</head>
+<body class="bg-background text-on-surface antialiased">
+  <!-- Top navigation -->
+  <header class="sticky top-0 z-50 border-b border-outline-variant/40 bg-white/70 backdrop-blur-xl">
+    <div class="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-4 sm:px-10">
+      <a href="{% url 'landing' %}" class="flex items-center gap-2">
+        <span class="material-symbols-outlined filled text-primary text-3xl">neurology</span>
+        <span class="text-xl font-800 font-bold tracking-tight">AI 101 Academy</span>
+      </a>
+      <nav class="hidden items-center gap-8 text-sm font-medium text-on-surface-variant md:flex">
+        <a href="{% url 'landing' %}" class="hover:text-primary transition">Home</a>
+        {% if course %}<a href="{% url 'course_overview' course.slug %}" class="hover:text-primary transition">Curriculum</a>{% endif %}
+        <a href="{% url 'industries' %}" class="hover:text-primary transition">Industries</a>
+        <a href="{% url 'pricing' %}" class="hover:text-primary transition">Pricing</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}" class="rounded-lg bg-primary-container px-5 py-2.5 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">My Dashboard</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="px-3 py-2 text-sm font-medium text-on-surface-variant hover:text-primary transition">Log In</a>
+          <a href="{% url 'signup' %}" class="rounded-lg bg-primary-container px-5 py-2.5 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">Get Started</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="mx-auto max-w-[1280px] px-4 pt-4 sm:px-10">
+      {% for message in messages %}
+        <div class="mb-2 rounded-lg border border-primary/20 bg-surface-container-low px-4 py-3 text-sm text-on-surface">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <!-- Footer -->
+  <footer class="mt-24 border-t border-outline-variant/40 bg-surface-container-low">
+    <div class="mx-auto flex max-w-[1280px] flex-col items-start justify-between gap-6 px-4 py-10 sm:px-10 md:flex-row md:items-center">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined filled text-primary text-2xl">neurology</span>
+          <span class="font-bold">AI 101 Academy</span>
+        </div>
+        <p class="mt-2 max-w-xs font-mono text-xs text-on-surface-variant">© 2026 AI 101 Academy · George Town, Cayman Islands. Empowering our community with practical AI skills.</p>
+      </div>
+      <div class="flex gap-8 font-mono text-xs text-on-surface-variant">
+        <a href="{% url 'pricing' %}" class="hover:text-primary">Pricing</a>
+        <a href="{% url 'industries' %}" class="hover:text-primary">Industries</a>
+        <a href="mailto:hello@ai101.ky" class="hover:text-primary">Contact Support</a>
+      </div>
+    </div>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,140 @@
+{% extends "app_base.html" %}
+{% block title %}Dashboard | AI 101 Academy{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-6xl px-4 py-10 sm:px-8">
+  {% if percent == 100 %}
+    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">You did it, {{ user.first_name|default:user.username }}! 🎓</h1>
+    <p class="mt-1 text-on-surface-variant">Course complete. Your certificate is ready to download.</p>
+  {% elif next_lesson %}
+    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Ready to keep going?</h1>
+    <p class="mt-1 text-on-surface-variant">You're making great progress. Keep up the momentum.</p>
+  {% else %}
+    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Welcome, {{ user.first_name|default:user.username }}!</h1>
+    <p class="mt-1 text-on-surface-variant">Your AI journey starts here.</p>
+  {% endif %}
+
+  {% if not enrollment or not enrollment.is_active %}
+  <!-- Not enrolled -->
+  <div class="mt-8 rounded-3xl border-2 border-dashed border-outline-variant bg-white p-10 text-center shadow-card">
+    <span class="material-symbols-outlined text-5xl text-primary">lock_open</span>
+    <h2 class="mt-4 text-xl font-bold">Unlock the full course</h2>
+    <p class="mx-auto mt-2 max-w-md text-on-surface-variant">Enroll in {{ course.title }} to access all lessons, quizzes, the AI tutor, and your certificate.</p>
+    <form method="post" action="{% url 'checkout' course.slug %}" class="mt-6">
+      {% csrf_token %}
+      <button type="submit" class="rounded-lg bg-primary-container px-8 py-3.5 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
+        Enroll Now — {{ course.price_display }}
+      </button>
+    </form>
+  </div>
+  {% else %}
+
+  <!-- Continue card -->
+  <div class="mt-8 overflow-hidden rounded-3xl border border-outline-variant/50 bg-white shadow-card">
+    <div class="grid md:grid-cols-5">
+      <div class="flex items-center justify-center bg-gradient-to-br from-primary via-primary-container to-secondary p-10 md:col-span-2">
+        <span class="material-symbols-outlined text-8xl text-white/90">{% if percent == 100 %}workspace_premium{% else %}rocket_launch{% endif %}</span>
+      </div>
+      <div class="p-8 md:col-span-3">
+        {% if percent == 100 %}
+          <p class="font-mono text-xs uppercase tracking-widest text-secondary">Course Complete</p>
+          <h2 class="mt-2 text-2xl font-bold">{{ course.title }}</h2>
+          <p class="mt-2 text-on-surface-variant">All {{ total }} lessons completed. Amazing work!</p>
+          <a href="{% url 'certificates' %}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-secondary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px">
+            Get Your Certificate <span class="material-symbols-outlined text-lg">workspace_premium</span>
+          </a>
+        {% elif next_lesson %}
+          <p class="font-mono text-xs uppercase tracking-widest text-secondary">Module {{ next_lesson.module.order }} · {{ next_lesson.module.title }}</p>
+          <h2 class="mt-2 text-2xl font-bold">{{ next_lesson.title }}</h2>
+          <p class="mt-2 text-sm text-on-surface-variant">{{ next_lesson.get_lesson_type_display }} · {{ next_lesson.duration_minutes }} min</p>
+          <div class="mt-6 flex flex-wrap items-center gap-6">
+            <a href="{% url 'lesson_detail' course.slug next_lesson.id %}" class="inline-flex items-center gap-2 rounded-lg bg-secondary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px">
+              Continue Lesson <span class="material-symbols-outlined text-lg">arrow_forward</span>
+            </a>
+            <div class="min-w-[180px] flex-1">
+              <div class="flex justify-between font-mono text-xs text-on-surface-variant">
+                <span>{{ percent }}% complete</span><span>{{ done }}/{{ total }} lessons</span>
+              </div>
+              <div class="mt-1.5 h-2 rounded-full bg-surface-container-high">
+                <div class="h-2 rounded-full bg-gradient-to-r from-primary to-secondary" style="width: {{ percent }}%"></div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8 grid gap-6 lg:grid-cols-3">
+    <!-- Module progress -->
+    <div class="rounded-2xl border border-outline-variant/50 bg-white p-6 shadow-card lg:col-span-2">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold">Learning Path</h2>
+        <a href="{% url 'my_learning' course.slug %}" class="font-mono text-xs text-primary hover:underline">View All</a>
+      </div>
+      <div class="mt-5 space-y-4">
+        {% for m in module_stats %}
+        <div class="flex items-center gap-4">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl {% if m.percent == 100 %}bg-success/10 text-success{% else %}bg-surface-container text-primary{% endif %}">
+            <span class="material-symbols-outlined text-xl">{% if m.percent == 100 %}check{% else %}{{ m.module.icon }}{% endif %}</span>
+          </span>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-baseline justify-between gap-2">
+              <p class="truncate text-sm font-semibold">{{ m.module.title }}</p>
+              <p class="shrink-0 font-mono text-xs text-on-surface-variant">{{ m.done }}/{{ m.total }}</p>
+            </div>
+            <div class="mt-1.5 h-1.5 rounded-full bg-surface-container-high">
+              <div class="h-1.5 rounded-full bg-gradient-to-r from-primary to-secondary" style="width: {{ m.percent }}%"></div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Side column -->
+    <div class="space-y-6">
+      <div class="rounded-2xl border border-outline-variant/50 bg-white p-6 shadow-card">
+        <h2 class="text-lg font-bold">Overall Progress</h2>
+        <div class="mt-4 flex items-center gap-5">
+          <div class="relative h-24 w-24">
+            <svg class="h-24 w-24 -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#e2e7ff" stroke-width="10"/>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="url(#grad)" stroke-width="10" stroke-linecap="round"
+                      stroke-dasharray="264" style="stroke-dashoffset: calc(264 - 264 * {{ percent }} / 100)"/>
+              <defs><linearGradient id="grad"><stop offset="0%" stop-color="#4f46e5"/><stop offset="100%" stop-color="#9333ea"/></linearGradient></defs>
+            </svg>
+            <span class="absolute inset-0 flex items-center justify-center text-xl font-extrabold">{{ percent }}%</span>
+          </div>
+          <div class="font-mono text-xs text-on-surface-variant">
+            <p>{{ done }} of {{ total }}</p>
+            <p>lessons complete</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-outline-variant/50 bg-white p-6 shadow-card">
+        <h2 class="text-lg font-bold">Recent Quiz Results</h2>
+        {% if attempts %}
+        <ul class="mt-4 space-y-3">
+          {% for a in attempts %}
+          <li class="flex items-center justify-between gap-2 text-sm">
+            <span class="truncate">{{ a.quiz.lesson.title }}</span>
+            <span class="shrink-0 rounded-full px-2.5 py-0.5 font-mono text-xs {% if a.passed %}bg-success/10 text-success{% else %}bg-error/10 text-error{% endif %}">{{ a.percent }}%</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="mt-3 text-sm text-on-surface-variant">No quizzes taken yet — they appear at the end of lessons.</p>
+        {% endif %}
+      </div>
+
+      <a href="{% url 'tutor' %}" class="block rounded-2xl bg-gradient-to-br from-primary to-secondary p-6 text-white shadow-glow transition hover:-translate-y-0.5">
+        <span class="material-symbols-outlined text-3xl">smart_toy</span>
+        <h2 class="mt-2 font-bold">Ask the AI Tutor</h2>
+        <p class="mt-1 text-sm text-white/85">Stuck on anything? Your personal AI teacher is available 24/7.</p>
+      </a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

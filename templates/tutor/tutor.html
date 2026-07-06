@@ -1,0 +1,27 @@
+{% extends "app_base.html" %}
+{% block title %}AI Tutor | AI 101 Academy{% endblock %}
+{% block content %}
+<div class="mx-auto flex h-[calc(100vh-3.5rem)] max-w-4xl flex-col px-4 py-6 sm:px-8 lg:h-screen">
+  <div class="flex items-center gap-4">
+    <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-secondary text-white shadow-glow">
+      <span class="material-symbols-outlined">smart_toy</span>
+    </span>
+    <div>
+      <h1 class="text-xl font-extrabold tracking-tight">AI Tutor</h1>
+      <p class="font-mono text-xs text-on-surface-variant">Your personal AI teacher · available 24/7</p>
+    </div>
+  </div>
+
+  <div id="tutor-root" class="mt-4 flex min-h-0 flex-1 flex-col"></div>
+
+  {{ history_json|json_script:"tutor-history" }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% load static %}
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="{% static 'js/helpers.js' %}"></script>
+<script src="{% static 'js/tutor.js' %}"></script>
+{% endblock %}

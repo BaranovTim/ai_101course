@@ -1,0 +1,69 @@
+{% extends "app_base.html" %}
+{% block title %}My Learning | AI 101 Academy{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-4xl px-4 py-10 sm:px-8">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-extrabold tracking-tight">{{ course.title }}</h1>
+      <p class="mt-1 text-on-surface-variant">Your learning path — one lesson at a time.</p>
+    </div>
+    {% if next_lesson %}
+    <a href="{% url 'lesson_detail' course.slug next_lesson.id %}" class="inline-flex items-center gap-2 rounded-lg bg-secondary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px">
+      Continue <span class="material-symbols-outlined text-lg">arrow_forward</span>
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Progress -->
+  <div class="mt-6 rounded-2xl border border-outline-variant/50 bg-white p-6 shadow-card">
+    <div class="flex justify-between font-mono text-xs text-on-surface-variant">
+      <span>{{ percent }}% complete</span><span>{{ done }}/{{ total }} lessons</span>
+    </div>
+    <div class="mt-2 h-2.5 rounded-full bg-surface-container-high">
+      <div class="h-2.5 rounded-full bg-gradient-to-r from-primary to-secondary" style="width: {{ percent }}%"></div>
+    </div>
+  </div>
+
+  <!-- Modules with connection lines -->
+  <div class="mt-10 space-y-10">
+    {% for module in course.modules.all %}
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-container text-primary">
+          <span class="material-symbols-outlined text-xl">{{ module.icon }}</span>
+        </span>
+        <div>
+          <p class="font-mono text-xs uppercase text-on-surface-variant">Module {{ module.order }}</p>
+          <h2 class="text-lg font-bold">{{ module.title }}</h2>
+        </div>
+      </div>
+      <div class="ml-5 mt-4 space-y-0 border-l-2 border-dashed border-outline-variant/60 pl-8">
+        {% for lesson in module.lessons.all %}
+        <a href="{% url 'lesson_detail' course.slug lesson.id %}"
+           class="group relative mb-3 flex items-center gap-4 rounded-2xl border p-4 transition
+                  {% if lesson.id in completed_ids %}border-success/30 bg-success/5 hover:border-success{% elif lesson == next_lesson %}border-primary bg-surface-container-low shadow-card hover:shadow-glow{% else %}border-outline-variant/50 bg-white hover:border-primary{% endif %}">
+          <span class="absolute -left-[42px] flex h-6 w-6 items-center justify-center rounded-full text-xs
+                       {% if lesson.id in completed_ids %}bg-success text-white{% elif lesson == next_lesson %}bg-primary text-white{% else %}bg-surface-container-high text-on-surface-variant{% endif %}">
+            {% if lesson.id in completed_ids %}<span class="material-symbols-outlined text-sm">check</span>{% else %}{{ lesson.order }}{% endif %}
+          </span>
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full
+                       {% if lesson.id in completed_ids %}bg-success/10 text-success{% else %}bg-surface-container text-primary{% endif %}">
+            <span class="material-symbols-outlined text-xl">
+              {% if lesson.id in completed_ids %}check{% elif lesson.lesson_type == 'exercise' %}code{% elif lesson.lesson_type == 'video' %}play_arrow{% else %}menu_book{% endif %}
+            </span>
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold {% if lesson == next_lesson %}text-primary{% endif %}">{{ lesson.title }}</p>
+            <p class="mt-0.5 font-mono text-xs text-on-surface-variant">
+              {% if lesson.lesson_type == 'exercise' %}&lt;&gt; Interactive Lab{% else %}{{ lesson.get_lesson_type_display }}{% endif %} · {{ lesson.duration_minutes }} min
+            </p>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant opacity-0 transition group-hover:opacity-100">arrow_forward</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
