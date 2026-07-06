@@ -12,9 +12,9 @@
     <div class="mt-6 flex items-center justify-between rounded-xl bg-surface-container-low p-4">
       <div>
         <p class="font-semibold">{{ course.title }}</p>
-        <p class="font-mono text-xs text-on-surface-variant">Lifetime access · one-time payment</p>
+        <p class="font-mono text-xs text-on-surface-variant">Lifetime access · one-time payment{% if is_student_price %} · <span class="text-secondary">student price applied ✓</span>{% endif %}</p>
       </div>
-      <p class="text-2xl font-extrabold">{{ course.price_display }}</p>
+      <p class="text-2xl font-extrabold">${% widthratio payment.amount_cents 100 1 %}</p>
     </div>
 
     <div class="mt-6 space-y-4 opacity-60">
@@ -37,7 +37,7 @@
     <form method="post" action="{% url 'simulate_payment' payment.id %}" class="mt-8">
       {% csrf_token %}
       <button type="submit" class="w-full rounded-lg bg-primary-container px-6 py-3.5 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
-        Simulate Payment — {{ course.price_display }}
+        Simulate Payment — ${% widthratio payment.amount_cents 100 1 %}
       </button>
     </form>
     <a href="{% url 'pricing' %}" class="mt-4 block text-center text-sm text-on-surface-variant hover:text-primary">Cancel and go back</a>

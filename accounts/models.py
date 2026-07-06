@@ -18,10 +18,24 @@ class Profile(models.Model):
         ("business_owner", "Small Business Owner"),
         ("other", "Other"),
     ]
+    STUDENT_STATUS_CHOICES = [
+        ("none", "Not a student"),
+        ("pending", "Verification pending"),
+        ("approved", "Verified student"),
+        ("rejected", "Verification rejected"),
+    ]
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="profile", on_delete=models.CASCADE)
     occupation = models.CharField(max_length=30, choices=OCCUPATIONS, default="other")
     district = models.CharField(max_length=100, blank=True, help_text="e.g. George Town, West Bay, Bodden Town")
     learning_goal = models.CharField(max_length=300, blank=True)
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    student_id_document = models.ImageField(
+        upload_to="student_ids/",
+        blank=True,
+        null=True,
+        help_text="Photo of a valid student ID, uploaded by the user to request the student discount.",
+    )
+    student_status = models.CharField(max_length=10, choices=STUDENT_STATUS_CHOICES, default="none")
 
     def __str__(self):
         return f"Profile of {self.user}"

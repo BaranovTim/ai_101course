@@ -24,6 +24,19 @@
     </div>
   </div>
 
+  {% if is_free_preview %}
+  <div class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-secondary/30 bg-gradient-to-r from-surface-container-low to-surface-container px-5 py-4">
+    <p class="text-sm"><span class="font-semibold text-secondary">Free preview</span> — enjoy this full lesson on us. Upgrade any time to continue with the rest of the course.</p>
+    <a href="{% url 'pricing' %}" class="rounded-lg bg-secondary-container px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px">See Pro options</a>
+  </div>
+  {% endif %}
+
+  {% if lesson.image %}
+  <div class="mt-8 overflow-hidden rounded-2xl border border-outline-variant/50 shadow-card">
+    <img src="{{ lesson.image.url }}" alt="{{ lesson.title }}" class="w-full object-cover"/>
+  </div>
+  {% endif %}
+
   {% if lesson.video_url %}
   <div class="mt-8 overflow-hidden rounded-2xl border border-outline-variant/50 shadow-card">
     <iframe class="aspect-video w-full" src="{{ lesson.video_url }}" title="{{ lesson.title }}" allowfullscreen></iframe>
@@ -32,6 +45,16 @@
 
   <!-- Body -->
   <article class="lesson-content mt-6">{{ lesson.content|safe }}</article>
+
+  {% if lesson.instructions %}
+  <div class="mt-8 rounded-2xl border border-primary/25 bg-surface-container-low p-6 shadow-card">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary">checklist</span>
+      <h2 class="text-lg font-bold">Instructions</h2>
+    </div>
+    <div class="lesson-content mt-2">{{ lesson.instructions|safe }}</div>
+  </div>
+  {% endif %}
 
   {% if lesson.exercise_prompt %}
   <div class="mt-10 rounded-2xl border border-secondary/30 bg-gradient-to-br from-surface-container-low to-surface-container p-6 shadow-card">
@@ -73,23 +96,23 @@
     </a>
     {% else %}<span></span>{% endif %}
     {% if next_lesson %}
-    <a href="{% url 'lesson_detail' course.slug next_lesson.id %}" class="flex items-center gap-2 rounded-lg border border-outline-variant bg-white px-5 py-3 text-sm font-semibold transition hover:border-primary hover:text-primary">
-      Next <span class="material-symbols-outlined text-lg">arrow_forward</span>
-    </a>
+      {% if is_free_preview %}
+      <a href="{% url 'pricing' %}" class="flex items-center gap-2 rounded-lg bg-secondary-container px-5 py-3 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px">
+        Unlock the Next Lesson <span class="material-symbols-outlined text-lg">lock_open</span>
+      </a>
+      {% else %}
+      <a href="{% url 'lesson_detail' course.slug next_lesson.id %}" class="flex items-center gap-2 rounded-lg border border-outline-variant bg-white px-5 py-3 text-sm font-semibold transition hover:border-primary hover:text-primary">
+        Next <span class="material-symbols-outlined text-lg">arrow_forward</span>
+      </a>
+      {% endif %}
     {% endif %}
   </div>
 </div>
-
-<!-- Floating AI tutor button -->
-<a href="{% url 'tutor' %}" class="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-white shadow-glow transition hover:scale-105" title="Ask the AI Tutor">
-  <span class="material-symbols-outlined">smart_toy</span>
-</a>
 {% endblock %}
 
 {% block scripts %}
 {% load static %}
 <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="{% static 'js/helpers.js' %}"></script>
 <script src="{% static 'js/quiz.js' %}"></script>
 {% endblock %}

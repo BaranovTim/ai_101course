@@ -114,6 +114,18 @@
       try {
         const data = await postJSON(`/api/lessons/${lessonId}/quiz/submit/`, { answers });
         setResult(data);
+        // Let the proactive AI assistant offer help on wrong answers.
+        const wrong = (data.results || [])
+          .filter((r) => !r.is_correct)
+          .map((r) => {
+            const q = questions.find((x) => x.id === r.question_id);
+            return { question: (q && q.text) || r.question_text || "", explanation: r.explanation || "" };
+          });
+        if (wrong.length) {
+          setTimeout(() => {
+            document.dispatchEvent(new CustomEvent("ai101:quiz-feedback", { detail: { wrong, passed: data.passed } }));
+          }, 1200);
+        }
       } catch (e) {
         alert("Could not submit the quiz: " + e.message);
       } finally {

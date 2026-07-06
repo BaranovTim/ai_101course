@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Courses | AI 101 Academy{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-[1280px] px-4 py-16 sm:px-10">
+  <div class="text-center">
+    <p class="font-mono text-xs uppercase tracking-widest text-secondary">Course Catalog</p>
+    <h1 class="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">Find your course</h1>
+    <p class="mx-auto mt-4 max-w-xl text-lg text-on-surface-variant">
+      The first lesson of every course is free — try before you decide.
+      {% if user.is_authenticated %}Courses matching your track appear first.{% endif %}
+    </p>
+  </div>
+
+  {% if cards %}
+  <div class="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+    {% for card in cards %}
+    <div class="flex flex-col rounded-3xl border bg-white shadow-card transition hover:-translate-y-1 hover:shadow-glow {% if card.recommended %}border-secondary/50{% else %}border-outline-variant/50{% endif %}">
+      <div class="flex items-center justify-between px-6 pt-6">
+        <span class="rounded-full bg-surface-container px-3 py-1 font-mono text-xs uppercase text-primary">{{ card.course.get_track_display }}</span>
+        {% if card.recommended %}
+          <span class="rounded-full bg-secondary/10 px-3 py-1 font-mono text-xs font-medium text-secondary">★ For your track</span>
+        {% elif card.enrolled %}
+          <span class="rounded-full bg-success/10 px-3 py-1 font-mono text-xs font-medium text-success">Enrolled</span>
+        {% endif %}
+      </div>
+      <div class="flex-1 px-6 pt-4">
+        <h2 class="text-xl font-bold leading-snug">{{ card.course.title }}</h2>
+        <p class="mt-2 text-sm leading-relaxed text-on-surface-variant">{{ card.course.tagline }}</p>
+        <p class="mt-4 font-mono text-xs text-on-surface-variant">
+          {{ card.course.modules.count }} modules · {{ card.course.lesson_count }} lessons
+        </p>
+      </div>
+      <div class="flex items-center justify-between border-t border-outline-variant/40 px-6 py-5">
+        <div>
+          {% if card.enrolled %}
+            <p class="text-sm font-semibold text-success">Full access</p>
+          {% else %}
+            <p class="text-lg font-extrabold">{{ card.course.price_display }}</p>
+            {% if card.course.student_price_display %}
+              <p class="font-mono text-xs text-secondary">{{ card.course.student_price_display }} for students</p>
+            {% endif %}
+          {% endif %}
+        </div>
+        {% if card.enrolled %}
+          <a href="{% url 'my_learning' card.course.slug %}" class="rounded-lg bg-primary-container px-5 py-2.5 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px">Continue</a>
+        {% elif card.first_lesson and user.is_authenticated %}
+          <a href="{% url 'lesson_detail' card.course.slug card.first_lesson.id %}" class="rounded-lg bg-primary-container px-5 py-2.5 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px">Try Lesson 1 Free</a>
+        {% else %}
+          <a href="{% url 'course_overview' card.course.slug %}" class="rounded-lg border border-outline-variant px-5 py-2.5 text-sm font-semibold transition hover:border-primary hover:text-primary">View Course</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="mx-auto mt-14 max-w-lg rounded-3xl border-2 border-dashed border-outline-variant bg-white p-12 text-center">
+    <span class="material-symbols-outlined text-5xl text-outline">library_books</span>
+    <h2 class="mt-4 text-xl font-bold">Courses coming soon</h2>
+    <p class="mt-2 text-on-surface-variant">We're preparing the first courses right now. Check back shortly!</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

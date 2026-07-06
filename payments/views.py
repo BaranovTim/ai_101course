@@ -38,21 +38,27 @@ def checkout(request, course_slug):
         messages.info(request, "You already own this course.")
         return redirect("dashboard")
 
+    price_cents = course.price_for(request.user)
+    is_student_price = price_cents != course.price_cents
+
     if not stripe_configured():
         # Local dev mode: no Stripe keys yet — show a simulated checkout page
         # so the full purchase flow can be exercised end to end.
         payment = Payment.objects.create(
             user=request.user,
             course=course,
-            amount_cents=course.price_cents,
+            amount_cents=price_cents,
             status="pending",
         )
         return render(
             request,
             "payments/simulated_checkout.html",
-            {"course": course, "payment": payment},
+            {"course": course, "payment": payment, "is_student_price": is_student_price},
         )
 
+    description = course.tagline or course.title
+    if is_student_price:
+        description += " (verified student price)"
     session = stripe.checkout.Session.create(
         mode="payment",
         payment_method_types=["card"],
@@ -61,10 +67,10 @@ def checkout(request, course_slug):
             {
                 "price_data": {
                     "currency": "usd",
-                    "unit_amount": course.price_cents,
+                    "unit_amount": price_cents,
                     "product_data": {
                         "name": course.title,
-                        "description": course.tagline,
+                        "description": description,
                     },
                 },
                 "quantity": 1,
@@ -78,7 +84,7 @@ def checkout(request, course_slug):
         user=request.user,
         course=course,
         stripe_session_id=session.id,
-        amount_cents=course.price_cents,
+        amount_cents=price_cents,
         status="pending",
     )
     return redirect(session.url, permanent=False)

@@ -2,116 +2,117 @@
 {% block title %}Dashboard | AI 101 Academy{% endblock %}
 {% block content %}
 <div class="mx-auto max-w-6xl px-4 py-10 sm:px-8">
-  {% if percent == 100 %}
-    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">You did it, {{ user.first_name|default:user.username }}! 🎓</h1>
-    <p class="mt-1 text-on-surface-variant">Course complete. Your certificate is ready to download.</p>
-  {% elif next_lesson %}
-    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Ready to keep going?</h1>
-    <p class="mt-1 text-on-surface-variant">You're making great progress. Keep up the momentum.</p>
-  {% else %}
-    <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Welcome, {{ user.first_name|default:user.username }}!</h1>
-    <p class="mt-1 text-on-surface-variant">Your AI journey starts here.</p>
-  {% endif %}
+  <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">
+    {% if my_courses %}Welcome back, {{ user.first_name|default:user.username }}!{% else %}Welcome, {{ user.first_name|default:user.username }}!{% endif %}
+  </h1>
+  <p class="mt-1 text-on-surface-variant">
+    {% if my_courses %}Pick up where you left off.{% else %}Start with a free first lesson — no payment needed.{% endif %}
+  </p>
 
-  {% if not enrollment or not enrollment.is_active %}
-  <!-- Not enrolled -->
-  <div class="mt-8 rounded-3xl border-2 border-dashed border-outline-variant bg-white p-10 text-center shadow-card">
-    <span class="material-symbols-outlined text-5xl text-primary">lock_open</span>
-    <h2 class="mt-4 text-xl font-bold">Unlock the full course</h2>
-    <p class="mx-auto mt-2 max-w-md text-on-surface-variant">Enroll in {{ course.title }} to access all lessons, quizzes, the AI tutor, and your certificate.</p>
-    <form method="post" action="{% url 'checkout' course.slug %}" class="mt-6">
-      {% csrf_token %}
-      <button type="submit" class="rounded-lg bg-primary-container px-8 py-3.5 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
-        Enroll Now — {{ course.price_display }}
-      </button>
-    </form>
-  </div>
-  {% else %}
-
-  <!-- Continue card -->
+  <!-- My courses -->
+  {% for mc in my_courses %}
   <div class="mt-8 overflow-hidden rounded-3xl border border-outline-variant/50 bg-white shadow-card">
     <div class="grid md:grid-cols-5">
       <div class="flex items-center justify-center bg-gradient-to-br from-primary via-primary-container to-secondary p-10 md:col-span-2">
-        <span class="material-symbols-outlined text-8xl text-white/90">{% if percent == 100 %}workspace_premium{% else %}rocket_launch{% endif %}</span>
+        <span class="material-symbols-outlined text-8xl text-white/90">{% if mc.percent == 100 %}workspace_premium{% else %}rocket_launch{% endif %}</span>
       </div>
       <div class="p-8 md:col-span-3">
-        {% if percent == 100 %}
-          <p class="font-mono text-xs uppercase tracking-widest text-secondary">Course Complete</p>
-          <h2 class="mt-2 text-2xl font-bold">{{ course.title }}</h2>
-          <p class="mt-2 text-on-surface-variant">All {{ total }} lessons completed. Amazing work!</p>
-          <a href="{% url 'certificates' %}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-secondary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px">
-            Get Your Certificate <span class="material-symbols-outlined text-lg">workspace_premium</span>
+        {% if mc.percent == 100 %}
+          <p class="font-mono text-xs uppercase tracking-widest text-secondary">Course Complete 🎓</p>
+          <h2 class="mt-2 text-2xl font-bold">{{ mc.course.title }}</h2>
+          <p class="mt-2 text-on-surface-variant">All {{ mc.total }} lessons completed. Amazing work!</p>
+          {% if mc.certificate %}
+          <a href="{% url 'certificate_download' mc.certificate.uid %}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-secondary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px">
+            Download Certificate <span class="material-symbols-outlined text-lg">download</span>
           </a>
-        {% elif next_lesson %}
-          <p class="font-mono text-xs uppercase tracking-widest text-secondary">Module {{ next_lesson.module.order }} · {{ next_lesson.module.title }}</p>
-          <h2 class="mt-2 text-2xl font-bold">{{ next_lesson.title }}</h2>
-          <p class="mt-2 text-sm text-on-surface-variant">{{ next_lesson.get_lesson_type_display }} · {{ next_lesson.duration_minutes }} min</p>
+          {% endif %}
+        {% elif mc.next_lesson %}
+          <p class="font-mono text-xs uppercase tracking-widest text-secondary">{{ mc.course.title }} · Module {{ mc.next_lesson.module.order }}</p>
+          <h2 class="mt-2 text-2xl font-bold">{{ mc.next_lesson.title }}</h2>
+          <p class="mt-2 text-sm text-on-surface-variant">{{ mc.next_lesson.get_lesson_type_display }} · {{ mc.next_lesson.duration_minutes }} min</p>
           <div class="mt-6 flex flex-wrap items-center gap-6">
-            <a href="{% url 'lesson_detail' course.slug next_lesson.id %}" class="inline-flex items-center gap-2 rounded-lg bg-secondary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px">
+            <a href="{% url 'lesson_detail' mc.course.slug mc.next_lesson.id %}" class="inline-flex items-center gap-2 rounded-lg bg-secondary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px">
               Continue Lesson <span class="material-symbols-outlined text-lg">arrow_forward</span>
             </a>
             <div class="min-w-[180px] flex-1">
               <div class="flex justify-between font-mono text-xs text-on-surface-variant">
-                <span>{{ percent }}% complete</span><span>{{ done }}/{{ total }} lessons</span>
+                <span>{{ mc.percent }}% complete</span><span>{{ mc.done }}/{{ mc.total }} lessons</span>
               </div>
               <div class="mt-1.5 h-2 rounded-full bg-surface-container-high">
-                <div class="h-2 rounded-full bg-gradient-to-r from-primary to-secondary" style="width: {{ percent }}%"></div>
+                <div class="h-2 rounded-full bg-gradient-to-r from-primary to-secondary" style="width: {{ mc.percent }}%"></div>
               </div>
             </div>
           </div>
+        {% else %}
+          <h2 class="text-2xl font-bold">{{ mc.course.title }}</h2>
+          <p class="mt-2 text-on-surface-variant">Lessons for this course are being prepared — check back soon.</p>
+        {% endif %}
+
+        {% if mc.module_stats and mc.percent != 100 %}
+        <div class="mt-6 space-y-3">
+          {% for m in mc.module_stats %}
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {% if m.percent == 100 %}bg-success/10 text-success{% else %}bg-surface-container text-primary{% endif %}">
+              <span class="material-symbols-outlined text-base">{% if m.percent == 100 %}check{% else %}{{ m.module.icon }}{% endif %}</span>
+            </span>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-baseline justify-between gap-2">
+                <p class="truncate text-xs font-semibold">{{ m.module.title }}</p>
+                <p class="shrink-0 font-mono text-xs text-on-surface-variant">{{ m.done }}/{{ m.total }}</p>
+              </div>
+              <div class="mt-1 h-1 rounded-full bg-surface-container-high">
+                <div class="h-1 rounded-full bg-gradient-to-r from-primary to-secondary" style="width: {{ m.percent }}%"></div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
         {% endif %}
       </div>
     </div>
   </div>
+  {% endfor %}
 
   <div class="mt-8 grid gap-6 lg:grid-cols-3">
-    <!-- Module progress -->
-    <div class="rounded-2xl border border-outline-variant/50 bg-white p-6 shadow-card lg:col-span-2">
-      <div class="flex items-center justify-between">
-        <h2 class="text-lg font-bold">Learning Path</h2>
-        <a href="{% url 'my_learning' course.slug %}" class="font-mono text-xs text-primary hover:underline">View All</a>
-      </div>
-      <div class="mt-5 space-y-4">
-        {% for m in module_stats %}
-        <div class="flex items-center gap-4">
-          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl {% if m.percent == 100 %}bg-success/10 text-success{% else %}bg-surface-container text-primary{% endif %}">
-            <span class="material-symbols-outlined text-xl">{% if m.percent == 100 %}check{% else %}{{ m.module.icon }}{% endif %}</span>
-          </span>
-          <div class="min-w-0 flex-1">
-            <div class="flex items-baseline justify-between gap-2">
-              <p class="truncate text-sm font-semibold">{{ m.module.title }}</p>
-              <p class="shrink-0 font-mono text-xs text-on-surface-variant">{{ m.done }}/{{ m.total }}</p>
+    <!-- Recommended / available courses -->
+    <div class="lg:col-span-2">
+      {% if recommended %}
+      <div class="rounded-2xl border border-outline-variant/50 bg-white p-6 shadow-card">
+        <h2 class="text-lg font-bold">{% if my_courses %}More courses for you{% else %}Recommended for you{% endif %}</h2>
+        <p class="mt-1 text-sm text-on-surface-variant">Based on your track — the first lesson of each is free.</p>
+        <div class="mt-5 space-y-4">
+          {% for r in recommended %}
+          <div class="flex flex-wrap items-center gap-4 rounded-xl border p-4 {% if r.recommended %}border-secondary/40 bg-surface-container-low{% else %}border-outline-variant/50{% endif %}">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-container text-primary">
+              <span class="material-symbols-outlined">library_books</span>
+            </span>
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="font-semibold">{{ r.course.title }}</p>
+                {% if r.recommended %}<span class="rounded-full bg-secondary/10 px-2.5 py-0.5 font-mono text-[10px] font-medium text-secondary">★ YOUR TRACK</span>{% endif %}
+              </div>
+              <p class="mt-0.5 font-mono text-xs text-on-surface-variant">{{ r.course.get_track_display }} · {{ r.course.lesson_count }} lessons · {{ r.course.price_display }}{% if r.course.student_price_display %} ({{ r.course.student_price_display }} students){% endif %}</p>
             </div>
-            <div class="mt-1.5 h-1.5 rounded-full bg-surface-container-high">
-              <div class="h-1.5 rounded-full bg-gradient-to-r from-primary to-secondary" style="width: {{ m.percent }}%"></div>
-            </div>
+            {% if r.first_lesson %}
+            <a href="{% url 'lesson_detail' r.course.slug r.first_lesson.id %}" class="rounded-lg bg-primary-container px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px">Try Free</a>
+            {% else %}
+            <a href="{% url 'course_overview' r.course.slug %}" class="rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold transition hover:border-primary hover:text-primary">View</a>
+            {% endif %}
           </div>
+          {% endfor %}
         </div>
-        {% endfor %}
       </div>
+      {% elif not my_courses %}
+      <div class="rounded-3xl border-2 border-dashed border-outline-variant bg-white p-10 text-center shadow-card">
+        <span class="material-symbols-outlined text-5xl text-outline">library_books</span>
+        <h2 class="mt-4 text-xl font-bold">No courses published yet</h2>
+        <p class="mx-auto mt-2 max-w-md text-on-surface-variant">New courses are on the way — check back soon.</p>
+      </div>
+      {% endif %}
     </div>
 
     <!-- Side column -->
     <div class="space-y-6">
-      <div class="rounded-2xl border border-outline-variant/50 bg-white p-6 shadow-card">
-        <h2 class="text-lg font-bold">Overall Progress</h2>
-        <div class="mt-4 flex items-center gap-5">
-          <div class="relative h-24 w-24">
-            <svg class="h-24 w-24 -rotate-90" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="#e2e7ff" stroke-width="10"/>
-              <circle cx="50" cy="50" r="42" fill="none" stroke="url(#grad)" stroke-width="10" stroke-linecap="round"
-                      stroke-dasharray="264" style="stroke-dashoffset: calc(264 - 264 * {{ percent }} / 100)"/>
-              <defs><linearGradient id="grad"><stop offset="0%" stop-color="#4f46e5"/><stop offset="100%" stop-color="#9333ea"/></linearGradient></defs>
-            </svg>
-            <span class="absolute inset-0 flex items-center justify-center text-xl font-extrabold">{{ percent }}%</span>
-          </div>
-          <div class="font-mono text-xs text-on-surface-variant">
-            <p>{{ done }} of {{ total }}</p>
-            <p>lessons complete</p>
-          </div>
-        </div>
-      </div>
-
       <div class="rounded-2xl border border-outline-variant/50 bg-white p-6 shadow-card">
         <h2 class="text-lg font-bold">Recent Quiz Results</h2>
         {% if attempts %}
@@ -135,6 +136,5 @@
       </a>
     </div>
   </div>
-  {% endif %}
 </div>
 {% endblock %}

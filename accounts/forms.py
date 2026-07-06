@@ -15,7 +15,7 @@ class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=60, required=True)
     last_name = forms.CharField(max_length=60, required=True)
     email = forms.EmailField(required=True)
-    occupation = forms.ChoiceField(choices=Profile.OCCUPATIONS, required=True)
+    occupation = forms.ChoiceField(choices=Profile.OCCUPATIONS, required=True, label="Your track")
 
     class Meta:
         model = User
@@ -56,9 +56,33 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ("occupation", "district", "learning_goal")
+        fields = ("avatar", "occupation", "district", "learning_goal")
+        widgets = {
+            "avatar": forms.FileInput(attrs={"accept": "image/*"}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs["class"] = INPUT_CLASSES
+        for name, field in self.fields.items():
+            if name == "avatar":
+                field.widget.attrs["class"] = "block w-full text-sm text-on-surface-variant file:mr-4 file:rounded-lg file:border-0 file:bg-surface-container file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-primary hover:file:bg-surface-container-high"
+            else:
+                field.widget.attrs["class"] = INPUT_CLASSES
+
+
+class StudentIDForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ("student_id_document",)
+        widgets = {
+            "student_id_document": forms.FileInput(attrs={"accept": "image/*"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["student_id_document"].required = True
+        self.fields["student_id_document"].widget.attrs["class"] = (
+            "block w-full text-sm text-on-surface-variant file:mr-4 file:rounded-lg file:border-0 "
+            "file:bg-surface-container file:px-4 file:py-2.5 file:text-sm file:font-semibold "
+            "file:text-primary hover:file:bg-surface-container-high"
+        )

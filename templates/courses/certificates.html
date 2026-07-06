@@ -27,19 +27,36 @@
     </div>
     {% endfor %}
   </div>
-  {% else %}
+  {% endif %}
+
+  {% if in_progress %}
+  <h2 class="mt-10 text-lg font-bold">In progress</h2>
+  <div class="mt-4 space-y-4">
+    {% for p in in_progress %}
+    <div class="flex flex-wrap items-center gap-4 rounded-2xl border border-outline-variant/50 bg-white p-6 shadow-card">
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold">{{ p.course.title }}</p>
+        <div class="mt-2 flex items-center gap-3">
+          <div class="h-2 flex-1 rounded-full bg-surface-container-high">
+            <div class="h-2 rounded-full bg-gradient-to-r from-primary to-secondary" style="width: {{ p.percent }}%"></div>
+          </div>
+          <span class="shrink-0 font-mono text-xs text-on-surface-variant">{{ p.done }}/{{ p.total }} lessons</span>
+        </div>
+      </div>
+      <a href="{% url 'my_learning' p.course.slug %}" class="rounded-lg border border-outline-variant px-5 py-2.5 text-sm font-semibold transition hover:border-primary hover:text-primary">Keep Learning</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if not certs and not in_progress %}
   <div class="mt-8 rounded-3xl border-2 border-dashed border-outline-variant bg-white p-12 text-center">
     <span class="material-symbols-outlined text-5xl text-outline">workspace_premium</span>
     <h2 class="mt-4 text-xl font-bold">No certificates yet</h2>
-    <p class="mx-auto mt-2 max-w-md text-on-surface-variant">
-      Complete all lessons in the course to earn your certificate.
-      {% if total %}You're {{ percent }}% of the way there ({{ done }}/{{ total }} lessons).{% endif %}
-    </p>
-    {% if course %}
-    <a href="{% url 'my_learning' course.slug %}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
-      Keep Learning <span class="material-symbols-outlined text-lg">arrow_forward</span>
+    <p class="mx-auto mt-2 max-w-md text-on-surface-variant">Complete all lessons of a course to earn your certificate — start with a free first lesson.</p>
+    <a href="{% url 'courses' %}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
+      Browse Courses <span class="material-symbols-outlined text-lg">arrow_forward</span>
     </a>
-    {% endif %}
   </div>
   {% endif %}
 </div>

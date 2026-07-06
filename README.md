@@ -1,8 +1,8 @@
 # AI 101 Academy 🧠
 
 An interactive AI education platform for the Cayman Islands community.
-Django + PostgreSQL backend, Tailwind-styled frontend with React components
-(quiz player and AI tutor chat), Stripe payments, and PDF certificates.
+Django + PostgreSQL backend, Tailwind-styled frontend with React components,
+Stripe payments, PDF certificates, and a proactive AI tutor.
 
 ## Quick start
 
@@ -10,42 +10,46 @@ Django + PostgreSQL backend, Tailwind-styled frontend with React components
 ./scripts/start.sh
 ```
 
-Then open **http://127.0.0.1:8000**.
+Then open **http://127.0.0.1:8000** — admin at **/admin/** (user `admin` / `admin12345` — change this!).
 
 The script starts the bundled PostgreSQL server (if not already running) and the
 Django dev server. Stop the database later with `./scripts/stop_db.sh`.
 
-### First-time setup (already done on this machine)
+## How it works for learners
 
-```bash
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-.venv/bin/python manage.py migrate
-.venv/bin/python manage.py seed_course        # loads all 5 modules / 21 lessons / 61 quiz questions
-.venv/bin/python manage.py createsuperuser
-```
+- Sign up and pick a **track** (accounting, hospitality, banking, …) — courses
+  matching the track are recommended first.
+- **The first lesson of every course is free** (including its quiz and the AI tutor).
+  From lesson two onward the course must be purchased ("Pro").
+- One-time payment per course via Stripe. **Verified students** (upload a student
+  ID in Settings, admin approves) automatically get the course's student price.
+- Progress tracking, interactive quizzes, a proactive AI assistant that pops up
+  to help after wrong quiz answers, and a professional PDF certificate on completion.
 
-## What's included
+## Creating courses (admin guide)
 
-| Feature | Where |
-|---|---|
-| Landing, pricing, industry hub, curriculum pages | public site |
-| Signup / login with occupation profile | `/accounts/…` |
-| $100 one-time purchase via **Stripe Checkout** | `/payments/…` |
-| Local **payment simulator** when Stripe keys are absent | automatic in dev |
-| 5 modules · 21 lessons · 61 quiz questions (seeded) | `manage.py seed_course` |
-| Interactive **React quiz player** with explanations | lesson pages |
-| **AI Tutor chat** (Anthropic API `claude-opus-4-8`, offline fallback without a key) | `/tutor/` |
-| Progress tracking + dashboard | `/dashboard/` |
-| **PDF certificate** with verification ID on completion | `/certificates/` |
-| Django admin for editing content, users, payments | `/admin/` (user `admin` / `admin12345` — change this!) |
+Everything is authored in the Django admin — no code needed:
+
+1. **/admin/ → Courses → Add Course** — title, tagline, track, price
+   (in cents: `10000` = $100), optional student price, publish.
+   Add modules inline on the same page.
+2. **Open a Module → add Lessons inline** — order, title, type, duration.
+   Open a lesson to add the body (**Content**, HTML supported with the
+   `prompt-box` / `callout` styled classes), an optional **image**, optional
+   **instructions** (highlighted step-by-step box), an optional video URL,
+   and an optional exercise prompt.
+3. **Quizzes → Add Quiz** — pick the lesson and pass mark, add questions inline,
+   then open each question to add its answer choices (tick the correct one).
+   The explanation field is shown to learners after answering — the AI assistant
+   also uses it when it offers help.
+4. Publish the course — the first lesson is automatically the free preview.
+
+**Student verification:** /admin/ → Profiles → filter by "Verification pending" →
+preview the uploaded ID → select rows → action **"Approve student verification"**.
 
 ## Database (PostgreSQL + DBeaver)
 
-PostgreSQL runs locally from the pip-installed `pgserver` package — real Postgres
-binaries, data stored in `./pgdata`, listening on TCP so DBeaver connects normally.
-
-**DBeaver connection settings** (Database → New Connection → PostgreSQL):
+PostgreSQL runs locally from the pip-installed `pgserver` package, data in `./pgdata`.
 
 | Setting | Value |
 |---|---|
@@ -55,50 +59,32 @@ binaries, data stored in `./pgdata`, listening on TCP so DBeaver connects normal
 | Username | `ai101` |
 | Password | `ai101pass` |
 
-(A `postgres` superuser also exists with password `postgres`.)
+## Keys & configuration (`.env`)
 
-Interesting tables: `courses_course`, `courses_module`, `courses_lesson`,
-`courses_quiz`, `courses_question`, `courses_choice`, `courses_enrollment`,
-`courses_lessonprogress`, `courses_quizattempt`, `courses_certificate`,
-`payments_payment`, `tutor_tutormessage`, `accounts_profile`, `auth_user`.
+| Variable | Needed for | Where to get it | Without it |
+|---|---|---|---|
+| `STRIPE_PUBLISHABLE_KEY` + `STRIPE_SECRET_KEY` | Real card payments | dashboard.stripe.com → Developers → API keys | A clearly-labeled local payment **simulator** runs instead |
+| `STRIPE_WEBHOOK_SECRET` | Webhook signature verification | `stripe listen --forward-to 127.0.0.1:8000/payments/webhook/` | Payments still verified on the success page |
+| `ANTHROPIC_API_KEY` | Live AI tutor & assistant chat | console.anthropic.com | A built-in offline tutor answers instead |
 
-## Configuration (`.env`)
-
-```
-STRIPE_PUBLISHABLE_KEY=   # from https://dashboard.stripe.com/test/apikeys
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=    # optional locally; payment is verified on the success page too
-ANTHROPIC_API_KEY=        # enables the live AI tutor (otherwise a helpful offline tutor runs)
-COURSE_PRICE_CENTS=10000  # $100
-```
-
-- **Without Stripe keys** the checkout shows a clearly-labeled *simulated* payment
-  page so you can test the whole flow locally.
-- **With Stripe test keys** the enroll button redirects to real Stripe Checkout
-  (test card `4242 4242 4242 4242`). For webhooks run:
-  `stripe listen --forward-to 127.0.0.1:8000/payments/webhook/` and put the
-  printed `whsec_…` into `.env`.
-
-## Editing course content
-
-- Quick edits: Django admin → Courses / Modules / Lessons / Quizzes.
-- Bulk edits: change `courses/course_content_part1.py` / `_part2.py`
-  and re-run `.venv/bin/python manage.py seed_course` (idempotent).
+Everything else (database, media uploads, certificates, quizzes, student
+verification, avatars) works with **no external keys**.
 
 ## Project layout
 
 ```
 ai101_academy/   Django settings & root urls
-accounts/        signup, profile, settings
-courses/         course/module/lesson/quiz models, views, seed command, PDF certificates
-payments/        Stripe checkout, webhook, dev simulator
-tutor/           AI tutor chat (Anthropic API + offline fallback)
-templates/       Tailwind pages (Lumina Learning design system from /Planning)
-static/js/       React components: quiz.js, tutor.js (+ helpers.js)
+accounts/        signup, profile (avatar, student ID), password change
+courses/         courses/modules/lessons/quizzes, progress, PDF certificates
+payments/        Stripe checkout + webhook + dev simulator, student pricing
+tutor/           AI tutor chat (Anthropic claude-opus-4-8 + offline fallback)
+templates/       Tailwind pages (Lumina Learning design system)
+static/js/       React quiz player, tutor chat, proactive assistant widget
+media/           uploaded lesson images, avatars, student IDs (gitignored)
 pgdata/          PostgreSQL data directory (gitignored)
 ```
 
 ## Tech stack
 
 Python 3.9 · Django 4.2 LTS · PostgreSQL 16 (pgserver) · Tailwind CSS (CDN) ·
-React 18 (CDN, no build step) · Stripe · ReportLab · Anthropic API
+React 18 (CDN, no build step) · Stripe · ReportLab · Pillow · Anthropic API

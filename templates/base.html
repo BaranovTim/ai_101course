@@ -15,7 +15,7 @@
       </a>
       <nav class="hidden items-center gap-8 text-sm font-medium text-on-surface-variant md:flex">
         <a href="{% url 'landing' %}" class="hover:text-primary transition">Home</a>
-        {% if course %}<a href="{% url 'course_overview' course.slug %}" class="hover:text-primary transition">Curriculum</a>{% endif %}
+        <a href="{% url 'courses' %}" class="hover:text-primary transition">Courses</a>
         <a href="{% url 'industries' %}" class="hover:text-primary transition">Industries</a>
         <a href="{% url 'pricing' %}" class="hover:text-primary transition">Pricing</a>
       </nav>

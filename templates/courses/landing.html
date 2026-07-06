@@ -14,23 +14,25 @@
     </h1>
     <p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-on-surface-variant">
       Master ChatGPT, Claude, and modern AI tools through practical, interactive lessons.
-      Built for beginners — hospitality, banking, accounting, and beyond.
+      Built for beginners — the first lesson of every course is free.
     </p>
     <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
       {% if enrollment and enrollment.is_active %}
         <a href="{% url 'dashboard' %}" class="flex items-center gap-2 rounded-lg bg-primary-container px-7 py-3.5 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
           Continue Learning <span class="material-symbols-outlined text-lg">arrow_forward</span>
         </a>
+      {% elif user.is_authenticated and course and first_lesson %}
+        <a href="{% url 'lesson_detail' course.slug first_lesson.id %}" class="flex items-center gap-2 rounded-lg bg-primary-container px-7 py-3.5 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
+          Try the First Lesson Free <span class="material-symbols-outlined text-lg">arrow_forward</span>
+        </a>
       {% else %}
         <a href="{% url 'signup' %}" class="flex items-center gap-2 rounded-lg bg-primary-container px-7 py-3.5 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
-          Start Learning <span class="material-symbols-outlined text-lg">arrow_forward</span>
+          Start Learning Free <span class="material-symbols-outlined text-lg">arrow_forward</span>
         </a>
       {% endif %}
-      {% if course %}
-      <a href="{% url 'course_overview' course.slug %}" class="rounded-lg border border-outline-variant bg-white px-7 py-3.5 font-semibold text-on-surface transition hover:border-primary hover:text-primary">
-        View Curriculum
+      <a href="{% url 'courses' %}" class="rounded-lg border border-outline-variant bg-white px-7 py-3.5 font-semibold text-on-surface transition hover:border-primary hover:text-primary">
+        Browse Courses
       </a>
-      {% endif %}
     </div>
 
     <!-- Hero visual card -->
@@ -59,20 +61,20 @@
 <!-- Stats -->
 <section class="border-y border-outline-variant/40 bg-surface-container-low">
   <div class="mx-auto grid max-w-[1280px] grid-cols-2 gap-8 px-4 py-12 text-center sm:px-10 md:grid-cols-4">
-    <div><p class="text-4xl font-extrabold text-primary">{{ course.lesson_count|default:"20" }}+</p><p class="mt-1 font-mono text-xs uppercase tracking-wider text-on-surface-variant">Interactive Lessons</p></div>
-    <div><p class="text-4xl font-extrabold text-secondary">5</p><p class="mt-1 font-mono text-xs uppercase tracking-wider text-on-surface-variant">Course Modules</p></div>
-    <div><p class="text-4xl font-extrabold text-primary">8+</p><p class="mt-1 font-mono text-xs uppercase tracking-wider text-on-surface-variant">Industries Covered</p></div>
-    <div><p class="text-4xl font-extrabold text-secondary">24/7</p><p class="mt-1 font-mono text-xs uppercase tracking-wider text-on-surface-variant">AI Tutor Access</p></div>
+    <div><p class="text-4xl font-extrabold text-primary">Free</p><p class="mt-1 font-mono text-xs uppercase tracking-wider text-on-surface-variant">First Lesson of Every Course</p></div>
+    <div><p class="text-4xl font-extrabold text-secondary">8+</p><p class="mt-1 font-mono text-xs uppercase tracking-wider text-on-surface-variant">Industries Covered</p></div>
+    <div><p class="text-4xl font-extrabold text-primary">24/7</p><p class="mt-1 font-mono text-xs uppercase tracking-wider text-on-surface-variant">AI Tutor Access</p></div>
+    <div><p class="text-4xl font-extrabold text-secondary">100%</p><p class="mt-1 font-mono text-xs uppercase tracking-wider text-on-surface-variant">Self-Paced Learning</p></div>
   </div>
 </section>
 
-<!-- Modules preview -->
+<!-- Featured course modules -->
 {% if course %}
 <section class="mx-auto max-w-[1280px] px-4 py-20 sm:px-10">
   <div class="text-center">
-    <p class="font-mono text-xs uppercase tracking-widest text-secondary">Curriculum</p>
-    <h2 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">What you'll learn</h2>
-    <p class="mx-auto mt-3 max-w-xl text-on-surface-variant">Five modules that take you from "what is AI?" to using it confidently in your job.</p>
+    <p class="font-mono text-xs uppercase tracking-widest text-secondary">Featured Course</p>
+    <h2 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{{ course.title }}</h2>
+    <p class="mx-auto mt-3 max-w-xl text-on-surface-variant">{{ course.tagline }}</p>
   </div>
   <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
     {% for module in course.modules.all %}
@@ -98,6 +100,7 @@
     <div class="text-center">
       <p class="font-mono text-xs uppercase tracking-widest text-secondary">Who it's for</p>
       <h2 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Made for Cayman's workforce</h2>
+      <p class="mx-auto mt-3 max-w-xl text-on-surface-variant">Pick your track when you sign up and we'll recommend the courses that fit your job.</p>
     </div>
     <div class="mt-12 flex flex-wrap justify-center gap-3">
       <span class="rounded-full border border-outline-variant bg-white px-5 py-2.5 text-sm font-medium">Hospitality &amp; Tourism</span>
@@ -116,10 +119,10 @@
 <!-- CTA -->
 <section class="mx-auto max-w-[1280px] px-4 py-20 sm:px-10">
   <div class="rounded-3xl bg-gradient-to-r from-primary to-secondary p-10 text-center text-white shadow-glow sm:p-16">
-    <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Ready to future-proof your career?</h2>
-    <p class="mx-auto mt-3 max-w-xl text-white/85">One payment of {{ course.price_display|default:"$100" }} for lifetime access to the full AI 101 course, AI tutor, and certificate.</p>
-    <a href="{% url 'pricing' %}" class="mt-8 inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3.5 font-semibold text-primary shadow-card transition hover:-translate-y-px">
-      Enroll Now <span class="material-symbols-outlined text-lg">arrow_forward</span>
+    <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Curious? Start with a free lesson.</h2>
+    <p class="mx-auto mt-3 max-w-xl text-white/85">No card needed. Try the first lesson of any course and upgrade to Pro only if it's right for you. Verified students get a discount.</p>
+    <a href="{% url 'courses' %}" class="mt-8 inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3.5 font-semibold text-primary shadow-card transition hover:-translate-y-px">
+      Explore Courses <span class="material-symbols-outlined text-lg">arrow_forward</span>
     </a>
   </div>
 </section>

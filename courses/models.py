@@ -5,11 +5,35 @@ from django.db import models
 
 
 class Course(models.Model):
+    TRACK_CHOICES = [
+        ("general", "General — everyone"),
+        ("hospitality", "Hospitality & Tourism"),
+        ("banking", "Banking & Finance"),
+        ("accounting", "Accounting & Audit"),
+        ("marketing", "Marketing"),
+        ("education", "Education"),
+        ("healthcare", "Healthcare"),
+        ("construction", "Construction & Real Estate"),
+        ("sales", "Sales"),
+        ("student", "Students"),
+        ("business_owner", "Small Business Owners"),
+    ]
     slug = models.SlugField(unique=True)
     title = models.CharField(max_length=200)
     tagline = models.CharField(max_length=300, blank=True)
     description = models.TextField(blank=True)
-    price_cents = models.PositiveIntegerField(default=10000)
+    track = models.CharField(
+        max_length=30,
+        choices=TRACK_CHOICES,
+        default="general",
+        help_text="Which career track this course belongs to. Learners see courses matching their occupation first.",
+    )
+    price_cents = models.PositiveIntegerField(default=10000, help_text="Price in US cents, e.g. 10000 = $100.")
+    student_price_cents = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Optional discounted price (in cents) for verified students. Leave blank for no student discount.",
+    )
     is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -20,8 +44,33 @@ class Course(models.Model):
     def price_display(self):
         return f"${self.price_cents / 100:,.0f}"
 
+    @property
+    def student_price_display(self):
+        if self.student_price_cents is None:
+            return None
+        return f"${self.student_price_cents / 100:,.0f}"
+
+    def price_for(self, user):
+        """Price in cents for this user (verified students get the discount)."""
+        if (
+            self.student_price_cents is not None
+            and user.is_authenticated
+            and getattr(user, "profile", None)
+            and user.profile.student_status == "approved"
+        ):
+            return self.student_price_cents
+        return self.price_cents
+
     def lesson_count(self):
         return Lesson.objects.filter(module__course=self).count()
+
+    def first_lesson(self):
+        """The free-preview lesson: the very first lesson of the course."""
+        return (
+            Lesson.objects.filter(module__course=self)
+            .order_by("module__order", "order")
+            .first()
+        )
 
 
 class Module(models.Model):
@@ -51,7 +100,17 @@ class Lesson(models.Model):
     lesson_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="reading")
     duration_minutes = models.PositiveIntegerField(default=10)
     video_url = models.URLField(blank=True)
+    image = models.ImageField(
+        upload_to="lessons/",
+        blank=True,
+        null=True,
+        help_text="Optional illustration shown at the top of the lesson.",
+    )
     content = models.TextField(blank=True, help_text="Lesson body as HTML")
+    instructions = models.TextField(
+        blank=True,
+        help_text="Optional step-by-step instructions shown in a highlighted box (HTML or plain text).",
+    )
     exercise_prompt = models.TextField(blank=True, help_text="Practical assignment shown at the end of the lesson")
 
     class Meta:
