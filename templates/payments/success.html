@@ -6,13 +6,13 @@
     <span class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-success/10">
       <span class="material-symbols-outlined filled text-5xl text-success">check_circle</span>
     </span>
-    <h1 class="mt-6 text-3xl font-extrabold tracking-tight">You're enrolled! 🎉</h1>
-    <p class="mt-3 text-on-surface-variant">Welcome to {{ course.title|default:"AI 101" }}. Your lifetime access is active — let's get you learning.</p>
+    <h1 class="mt-6 text-3xl font-extrabold tracking-tight">Track unlocked! 🎉</h1>
+    <p class="mt-3 text-on-surface-variant">
+      {% if track %}The <strong>{{ track.name }}</strong> is yours — every course in it is now open, for life.{% else %}Your purchase is complete — your courses are now open.{% endif %}
+    </p>
     <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
       <a href="{% url 'dashboard' %}" class="rounded-lg bg-primary-container px-8 py-3.5 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">Go to Dashboard</a>
-      {% if course %}
-      <a href="{% url 'my_learning' course.slug %}" class="rounded-lg border border-outline-variant px-8 py-3.5 font-semibold transition hover:border-primary hover:text-primary">Start Lesson 1</a>
-      {% endif %}
+      <a href="{% url 'courses' %}" class="rounded-lg border border-outline-variant px-8 py-3.5 font-semibold transition hover:border-primary hover:text-primary">Browse Courses</a>
     </div>
   </div>
 </section>

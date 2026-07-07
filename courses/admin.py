@@ -11,6 +11,7 @@ from .models import (
     Question,
     Quiz,
     QuizAttempt,
+    Track,
 )
 
 admin.site.site_header = "AI 101 Academy — Administration"
@@ -46,22 +47,40 @@ class QuestionInline(admin.TabularInline):
     fields = ("order", "text", "explanation")
 
 
+@admin.register(Track)
+class TrackAdmin(admin.ModelAdmin):
+    list_display = ("name", "audience", "price_display", "student_price_display", "course_total", "is_published", "order")
+    list_filter = ("audience", "is_published")
+    prepopulated_fields = {"slug": ("name",)}
+    fieldsets = (
+        ("Basics", {"fields": ("name", "slug", "description", "icon", "order", "is_published")}),
+        ("Audience", {
+            "fields": ("audience",),
+            "description": "Learners whose occupation matches see this track recommended first.",
+        }),
+        ("Pricing", {
+            "fields": ("price_cents", "student_price_cents"),
+            "description": "Prices in US cents (10000 = $100). Buying a track unlocks all of its courses; the first lesson of each course stays free.",
+        }),
+    )
+
+    @admin.display(description="Courses")
+    def course_total(self, obj):
+        return obj.courses.count()
+
+
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ("title", "track", "price_display", "student_price_display", "lesson_count", "is_published")
+    list_display = ("title", "track", "lesson_count", "is_published")
     list_filter = ("track", "is_published")
     search_fields = ("title",)
     prepopulated_fields = {"slug": ("title",)}
     inlines = [ModuleInline]
     fieldsets = (
         ("Basics", {"fields": ("title", "slug", "tagline", "description", "is_published")}),
-        ("Audience", {
+        ("Track", {
             "fields": ("track",),
-            "description": "Learners whose occupation matches the track see this course recommended first.",
-        }),
-        ("Pricing", {
-            "fields": ("price_cents", "student_price_cents"),
-            "description": "Prices are in US cents (10000 = $100). The first lesson of every course is always free to preview.",
+            "description": "Buying the track unlocks this course. Tip: staff can also build courses at /studio/ without using this admin.",
         }),
     )
 
@@ -129,8 +148,8 @@ class QuestionAdmin(admin.ModelAdmin):
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ("user", "course", "is_active", "activated_at")
-    list_filter = ("is_active", "course")
+    list_display = ("user", "track", "is_active", "activated_at")
+    list_filter = ("is_active", "track")
 
 
 @admin.register(LessonProgress)

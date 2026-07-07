@@ -17,35 +17,45 @@ Django dev server. Stop the database later with `./scripts/stop_db.sh`.
 
 ## How it works for learners
 
-- Sign up and pick a **track** (accounting, hospitality, banking, …) — courses
-  matching the track are recommended first.
+- Learners buy **tracks, not individual courses**: the **General track** is the
+  base purchase, and career tracks (Accounting, Hospitality, Banking, …) can be
+  added on top. One payment unlocks every course in the track — forever,
+  including courses added later.
+- Sign up and pick a career at signup — the matching career track is recommended
+  first on the catalog, pricing page, and dashboard.
 - **The first lesson of every course is free** (including its quiz and the AI tutor).
-  From lesson two onward the course must be purchased ("Pro").
-- One-time payment per course via Stripe. **Verified students** (upload a student
-  ID in Settings, admin approves) automatically get the course's student price.
+- **Verified students** (upload a student ID in Settings, staff approves)
+  automatically get the track's student price.
 - Progress tracking, interactive quizzes, a proactive AI assistant that pops up
-  to help after wrong quiz answers, and a professional PDF certificate on completion.
+  to help after wrong quiz answers, and a professional PDF certificate per
+  completed course.
 
-## Creating courses (admin guide)
+## Building courses — the Studio (staff)
 
-Everything is authored in the Django admin — no code needed:
+Staff members get a **Studio** link in the sidebar (or go to **/studio/**) —
+a full course builder inside the site, no Django admin needed:
 
-1. **/admin/ → Courses → Add Course** — title, tagline, track, price
-   (in cents: `10000` = $100), optional student price, publish.
-   Add modules inline on the same page.
-2. **Open a Module → add Lessons inline** — order, title, type, duration.
-   Open a lesson to add the body (**Content**, HTML supported with the
-   `prompt-box` / `callout` styled classes), an optional **image**, optional
-   **instructions** (highlighted step-by-step box), an optional video URL,
-   and an optional exercise prompt.
-3. **Quizzes → Add Quiz** — pick the lesson and pass mark, add questions inline,
-   then open each question to add its answer choices (tick the correct one).
-   The explanation field is shown to learners after answering — the AI assistant
-   also uses it when it offers help.
-4. Publish the course — the first lesson is automatically the free preview.
+1. **New Track** — name, audience, price/student price (in cents: `10000` = $100).
+   Tracks are what learners buy.
+2. **New Course** — assign it to a track, then **Manage Content**.
+3. **Add modules and lessons** on the course page. Lessons support an optional
+   **image upload**, HTML content (with `prompt-box` / `callout` styled boxes),
+   optional **instructions**, a video URL, and an exercise prompt.
+4. **Add Quiz** next to any lesson opens the **Quiz Builder** — questions and
+   answer choices are edited together on one page: type choices, tick the
+   correct one, set the pass mark, save once. (This replaces the clunky
+   Django-admin flow where choices lived on a separate page.)
+5. Publish — the first lesson of each course is automatically the free preview.
+
+The classic Django admin at **/admin/** still works for everything else
+(users, payments, enrollments, student verification).
 
 **Student verification:** /admin/ → Profiles → filter by "Verification pending" →
 preview the uploaded ID → select rows → action **"Approve student verification"**.
+
+**Seed content:** `python manage.py seed_course` loads the ready-made
+General track with the full "AI 101" course (5 modules, 21 lessons, 61 quiz
+questions). Re-running it refreshes that content; it never touches other tracks.
 
 ## Database (PostgreSQL + DBeaver)
 
@@ -79,7 +89,7 @@ courses/         courses/modules/lessons/quizzes, progress, PDF certificates
 payments/        Stripe checkout + webhook + dev simulator, student pricing
 tutor/           AI tutor chat (Anthropic claude-opus-4-8 + offline fallback)
 templates/       Tailwind pages (Lumina Learning design system)
-static/js/       React quiz player, tutor chat, proactive assistant widget
+static/js/       React quiz player, tutor chat, assistant widget, effects.js (animations)
 media/           uploaded lesson images, avatars, student IDs (gitignored)
 pgdata/          PostgreSQL data directory (gitignored)
 ```
@@ -88,3 +98,9 @@ pgdata/          PostgreSQL data directory (gitignored)
 
 Python 3.9 · Django 4.2 LTS · PostgreSQL 16 (pgserver) · Tailwind CSS (CDN) ·
 React 18 (CDN, no build step) · Stripe · ReportLab · Pillow · Anthropic API
+
+The frontend ships an animation layer (`static/js/effects.js` + CSS in
+`templates/partials/head.html`): particle neural-network hero canvas, scroll-reveal
+transitions, count-up stats, a typewriter headline, floating gradient blobs, an
+infinite audience marquee, 3D card tilt, animated progress bars, and an animated
+"aurora" CTA — all disabled automatically for users with reduced-motion enabled.

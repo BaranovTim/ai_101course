@@ -1,0 +1,92 @@
+{% extends "app_base.html" %}
+{% block title %}Manage {{ course.title }} | Studio{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-4xl px-4 py-10 sm:px-8">
+  <a href="{% url 'studio_home' %}" class="flex items-center gap-1 font-mono text-xs text-on-surface-variant hover:text-primary">
+    <span class="material-symbols-outlined text-sm">arrow_back</span> Back to Studio
+  </a>
+  <div class="mt-4 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-widest text-secondary">{{ course.track.name|default:"⚠ No track assigned" }}</p>
+      <h1 class="mt-1 text-3xl font-extrabold tracking-tight">{{ course.title }}
+        {% if not course.is_published %}<span class="ml-2 align-middle rounded-full bg-warning/10 px-3 py-1 font-mono text-xs text-warning">DRAFT</span>{% endif %}
+      </h1>
+    </div>
+    <div class="flex gap-3">
+      <a href="{% url 'course_overview' course.slug %}" target="_blank" class="rounded-lg border border-outline-variant px-5 py-2.5 text-sm font-semibold transition hover:border-primary hover:text-primary">Preview ↗</a>
+      <a href="{% url 'studio_course_edit' course.id %}" class="rounded-lg border border-outline-variant px-5 py-2.5 text-sm font-semibold transition hover:border-primary hover:text-primary">Course Settings</a>
+    </div>
+  </div>
+
+  <!-- Modules -->
+  {% for module in course.modules.all %}
+  <div class="mt-8 rounded-2xl border border-outline-variant/50 bg-white shadow-card">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/40 px-6 py-4">
+      <div class="flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-container text-primary">
+          <span class="material-symbols-outlined">{{ module.icon }}</span>
+        </span>
+        <div>
+          <p class="font-mono text-xs uppercase text-on-surface-variant">Module {{ module.order }}</p>
+          <h2 class="font-bold">{{ module.title }}</h2>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <a href="{% url 'studio_lesson_create' course.id %}?module={{ module.id }}" class="rounded-lg bg-primary-container px-4 py-2 text-xs font-semibold text-white shadow-card transition hover:-translate-y-px">+ Lesson</a>
+        <a href="{% url 'studio_module_edit' module.id %}" class="rounded-lg border border-outline-variant px-4 py-2 text-xs font-semibold transition hover:border-primary hover:text-primary">Edit</a>
+        <form method="post" action="{% url 'studio_module_delete' module.id %}" onsubmit="return confirm('Delete this module AND all its lessons?')">
+          {% csrf_token %}
+          <button type="submit" class="rounded-lg border border-error/40 px-4 py-2 text-xs font-semibold text-error transition hover:bg-error/5">Delete</button>
+        </form>
+      </div>
+    </div>
+    {% if module.lessons.all %}
+    <ul>
+      {% for lesson in module.lessons.all %}
+      <li class="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/30 px-6 py-3.5 last:border-0">
+        <div class="flex min-w-0 items-center gap-3">
+          <span class="font-mono text-xs text-on-surface-variant">{{ lesson.order }}.</span>
+          <div class="min-w-0">
+            <p class="truncate font-medium">{{ lesson.title }}</p>
+            <p class="font-mono text-xs text-on-surface-variant">
+              {{ lesson.get_lesson_type_display }} · {{ lesson.duration_minutes }} min
+              {% if lesson.image %} · 🖼 image{% endif %}
+              {% if lesson.id in lessons_with_quiz %} · ✓ quiz{% else %} · <span class="text-warning">no quiz</span>{% endif %}
+            </p>
+          </div>
+        </div>
+        <div class="flex shrink-0 gap-2">
+          <a href="{% url 'studio_quiz' lesson.id %}" class="rounded-lg border border-secondary/40 px-3 py-1.5 text-xs font-semibold text-secondary transition hover:bg-secondary hover:text-white">
+            {% if lesson.id in lessons_with_quiz %}Edit Quiz{% else %}Add Quiz{% endif %}
+          </a>
+          <a href="{% url 'studio_lesson_edit' lesson.id %}" class="rounded-lg border border-outline-variant px-3 py-1.5 text-xs font-semibold transition hover:border-primary hover:text-primary">Edit</a>
+          <form method="post" action="{% url 'studio_lesson_delete' lesson.id %}" onsubmit="return confirm('Delete this lesson?')">
+            {% csrf_token %}
+            <button type="submit" class="rounded-lg border border-error/40 px-3 py-1.5 text-xs font-semibold text-error transition hover:bg-error/5">✕</button>
+          </form>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="px-6 py-4 text-sm text-on-surface-variant">No lessons yet — add the first one.</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <!-- Add module -->
+  <div class="mt-8 rounded-2xl border-2 border-dashed border-outline-variant bg-white p-6">
+    <h2 class="font-bold">Add a module</h2>
+    <form method="post" action="{% url 'studio_module_add' course.id %}" class="mt-4 grid gap-4 sm:grid-cols-4">
+      {% csrf_token %}
+      <div><label class="mb-1.5 block text-xs font-medium">Order</label>{{ module_form.order }}</div>
+      <div class="sm:col-span-2"><label class="mb-1.5 block text-xs font-medium">Title</label>{{ module_form.title }}</div>
+      <div><label class="mb-1.5 block text-xs font-medium">Icon</label>{{ module_form.icon }}</div>
+      <div class="sm:col-span-3"><label class="mb-1.5 block text-xs font-medium">Subtitle</label>{{ module_form.subtitle }}</div>
+      <div class="flex items-end">
+        <button type="submit" class="w-full rounded-lg bg-primary-container px-5 py-3 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px">Add Module</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

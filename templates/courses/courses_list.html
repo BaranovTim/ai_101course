@@ -2,53 +2,77 @@
 {% block title %}Courses | AI 101 Academy{% endblock %}
 {% block content %}
 <section class="mx-auto max-w-[1280px] px-4 py-16 sm:px-10">
-  <div class="text-center">
+  <div class="text-center" data-reveal>
     <p class="font-mono text-xs uppercase tracking-widest text-secondary">Course Catalog</p>
-    <h1 class="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">Find your course</h1>
+    <h1 class="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">Pick your track</h1>
     <p class="mx-auto mt-4 max-w-xl text-lg text-on-surface-variant">
-      The first lesson of every course is free — try before you decide.
-      {% if user.is_authenticated %}Courses matching your track appear first.{% endif %}
+      One purchase unlocks every course in a track. Start with the General track,
+      then add the track that matches your career. The first lesson of every course is free.
     </p>
   </div>
 
-  {% if cards %}
-  <div class="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-    {% for card in cards %}
-    <div class="flex flex-col rounded-3xl border bg-white shadow-card transition hover:-translate-y-1 hover:shadow-glow {% if card.recommended %}border-secondary/50{% else %}border-outline-variant/50{% endif %}">
-      <div class="flex items-center justify-between px-6 pt-6">
-        <span class="rounded-full bg-surface-container px-3 py-1 font-mono text-xs uppercase text-primary">{{ card.course.get_track_display }}</span>
-        {% if card.recommended %}
-          <span class="rounded-full bg-secondary/10 px-3 py-1 font-mono text-xs font-medium text-secondary">★ For your track</span>
-        {% elif card.enrolled %}
-          <span class="rounded-full bg-success/10 px-3 py-1 font-mono text-xs font-medium text-success">Enrolled</span>
-        {% endif %}
-      </div>
-      <div class="flex-1 px-6 pt-4">
-        <h2 class="text-xl font-bold leading-snug">{{ card.course.title }}</h2>
-        <p class="mt-2 text-sm leading-relaxed text-on-surface-variant">{{ card.course.tagline }}</p>
-        <p class="mt-4 font-mono text-xs text-on-surface-variant">
-          {{ card.course.modules.count }} modules · {{ card.course.lesson_count }} lessons
-        </p>
-      </div>
-      <div class="flex items-center justify-between border-t border-outline-variant/40 px-6 py-5">
-        <div>
-          {% if card.enrolled %}
-            <p class="text-sm font-semibold text-success">Full access</p>
+  {% if groups %}
+  <div class="mt-14 space-y-10">
+    {% for g in groups %}
+    <div data-reveal class="overflow-hidden rounded-3xl border bg-white shadow-card {% if g.recommended %}border-secondary/50{% else %}border-outline-variant/50{% endif %}">
+      <!-- Track header -->
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-outline-variant/40 bg-surface-container-low px-8 py-6">
+        <div class="flex items-center gap-4">
+          <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-secondary text-white">
+            <span class="material-symbols-outlined text-2xl">{{ g.track.icon }}</span>
+          </span>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="text-xl font-bold">{{ g.track.name }}</h2>
+              {% if g.recommended %}<span class="rounded-full bg-secondary/10 px-3 py-1 font-mono text-xs font-medium text-secondary">★ For your track</span>{% endif %}
+              {% if g.owned %}<span class="rounded-full bg-success/10 px-3 py-1 font-mono text-xs font-medium text-success">✓ Owned</span>{% endif %}
+            </div>
+            <p class="mt-0.5 text-sm text-on-surface-variant">{{ g.track.description }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          {% if not g.owned %}
+          <div class="text-right">
+            <p class="text-2xl font-extrabold">{{ g.track.price_display }}</p>
+            {% if g.track.student_price_display %}<p class="font-mono text-xs text-secondary">{{ g.track.student_price_display }} for students</p>{% endif %}
+          </div>
+          {% if user.is_authenticated %}
+          <form method="post" action="{% url 'checkout' g.track.slug %}">
+            {% csrf_token %}
+            <button type="submit" class="rounded-lg bg-primary-container px-6 py-3 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">Unlock Track</button>
+          </form>
           {% else %}
-            <p class="text-lg font-extrabold">{{ card.course.price_display }}</p>
-            {% if card.course.student_price_display %}
-              <p class="font-mono text-xs text-secondary">{{ card.course.student_price_display }} for students</p>
-            {% endif %}
+          <a href="{% url 'signup' %}" class="rounded-lg bg-primary-container px-6 py-3 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">Sign Up Free</a>
+          {% endif %}
           {% endif %}
         </div>
-        {% if card.enrolled %}
-          <a href="{% url 'my_learning' card.course.slug %}" class="rounded-lg bg-primary-container px-5 py-2.5 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px">Continue</a>
-        {% elif card.first_lesson and user.is_authenticated %}
-          <a href="{% url 'lesson_detail' card.course.slug card.first_lesson.id %}" class="rounded-lg bg-primary-container px-5 py-2.5 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px">Try Lesson 1 Free</a>
-        {% else %}
-          <a href="{% url 'course_overview' card.course.slug %}" class="rounded-lg border border-outline-variant px-5 py-2.5 text-sm font-semibold transition hover:border-primary hover:text-primary">View Course</a>
-        {% endif %}
       </div>
+
+      <!-- Courses inside the track -->
+      {% if g.courses %}
+      <ul>
+        {% for c in g.courses %}
+        <li class="flex flex-wrap items-center justify-between gap-4 border-b border-outline-variant/30 px-8 py-5 last:border-0">
+          <div class="min-w-0">
+            <a href="{% url 'course_overview' c.course.slug %}" class="font-semibold hover:text-primary">{{ c.course.title }}</a>
+            <p class="mt-0.5 text-sm text-on-surface-variant">{{ c.course.tagline }}</p>
+            <p class="mt-1 font-mono text-xs text-on-surface-variant">{{ c.course.modules.count }} modules · {{ c.course.lesson_count }} lessons</p>
+          </div>
+          <div class="flex shrink-0 gap-2">
+            {% if g.owned %}
+              <a href="{% url 'my_learning' c.course.slug %}" class="rounded-lg bg-primary-container px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:-translate-y-px">Continue</a>
+            {% elif c.first_lesson and user.is_authenticated %}
+              <a href="{% url 'lesson_detail' c.course.slug c.first_lesson.id %}" class="rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold transition hover:border-primary hover:text-primary">Try Lesson 1 Free</a>
+            {% else %}
+              <a href="{% url 'course_overview' c.course.slug %}" class="rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold transition hover:border-primary hover:text-primary">View</a>
+            {% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="px-8 py-6 text-sm text-on-surface-variant">Courses for this track are being prepared — stay tuned!</p>
+      {% endif %}
     </div>
     {% endfor %}
   </div>
@@ -56,7 +80,7 @@
   <div class="mx-auto mt-14 max-w-lg rounded-3xl border-2 border-dashed border-outline-variant bg-white p-12 text-center">
     <span class="material-symbols-outlined text-5xl text-outline">library_books</span>
     <h2 class="mt-4 text-xl font-bold">Courses coming soon</h2>
-    <p class="mt-2 text-on-surface-variant">We're preparing the first courses right now. Check back shortly!</p>
+    <p class="mt-2 text-on-surface-variant">We're preparing the first tracks right now. Check back shortly!</p>
   </div>
   {% endif %}
 </section>

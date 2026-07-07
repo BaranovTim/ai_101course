@@ -17,22 +17,49 @@ from .models import (
     LessonProgress,
     Quiz,
     QuizAttempt,
+    Track,
 )
 
 
 def get_featured_course():
-    return Course.objects.filter(is_published=True).first()
+    return (
+        Course.objects.filter(is_published=True, track__is_published=True)
+        .order_by("track__order", "created_at")
+        .first()
+    )
 
 
-def get_enrollment(user, course):
-    if not user.is_authenticated or course is None:
-        return None
-    return Enrollment.objects.filter(user=user, course=course).first()
+def owned_track_ids(user):
+    if not user.is_authenticated:
+        return set()
+    return set(
+        Enrollment.objects.filter(user=user, is_active=True).values_list("track_id", flat=True)
+    )
 
 
-def has_active_enrollment(user, course):
-    enrollment = get_enrollment(user, course)
-    return enrollment is not None and enrollment.is_active
+def has_track_access(user, course):
+    return course.track_id is not None and course.track_id in owned_track_ids(user)
+
+
+def user_occupation(user):
+    if user.is_authenticated and getattr(user, "profile", None):
+        return user.profile.occupation
+    return ""
+
+
+def tracks_ordered_for_user(user):
+    """Published tracks: the user's career track first, then General, then the rest."""
+    occupation = user_occupation(user)
+    tracks = list(Track.objects.filter(is_published=True))
+
+    def key(t):
+        if occupation and t.audience == occupation:
+            return (0, t.order)
+        if t.audience == "general":
+            return (1, t.order)
+        return (2, t.order)
+
+    return sorted(tracks, key=key)
 
 
 def course_progress(user, course):
@@ -63,72 +90,51 @@ def maybe_issue_certificate(user, course):
     return None
 
 
-def ordered_for_user(courses, user):
-    """Sort courses: user's track first, then general, then the rest."""
-    occupation = ""
-    if user.is_authenticated and getattr(user, "profile", None):
-        occupation = user.profile.occupation
-
-    def key(c):
-        if c.track == occupation:
-            return 0
-        if c.track == "general":
-            return 1
-        return 2
-
-    return sorted(courses, key=key)
-
-
 # ---------- Public pages ----------
 
 def landing(request):
     course = get_featured_course()
-    enrollment = get_enrollment(request.user, course)
     first_lesson = course.first_lesson() if course else None
+    has_access = course is not None and has_track_access(request.user, course)
     return render(
         request,
         "courses/landing.html",
-        {"course": course, "enrollment": enrollment, "first_lesson": first_lesson},
+        {"course": course, "first_lesson": first_lesson, "has_access": has_access},
     )
 
 
 def courses_list(request):
-    published = list(Course.objects.filter(is_published=True).prefetch_related("modules__lessons"))
-    enrolled_ids = set()
-    if request.user.is_authenticated:
-        enrolled_ids = set(
-            Enrollment.objects.filter(user=request.user, is_active=True).values_list(
-                "course_id", flat=True
-            )
-        )
-    occupation = ""
-    if request.user.is_authenticated and getattr(request.user, "profile", None):
-        occupation = request.user.profile.occupation
-
-    cards = []
-    for c in ordered_for_user(published, request.user):
-        cards.append(
+    owned = owned_track_ids(request.user)
+    occupation = user_occupation(request.user)
+    groups = []
+    for track in tracks_ordered_for_user(request.user):
+        courses = [
+            {"course": c, "first_lesson": c.first_lesson()}
+            for c in track.published_courses().order_by("created_at")
+        ]
+        groups.append(
             {
-                "course": c,
-                "enrolled": c.id in enrolled_ids,
-                "recommended": bool(occupation) and c.track == occupation,
-                "first_lesson": c.first_lesson(),
+                "track": track,
+                "owned": track.id in owned,
+                "recommended": bool(occupation) and track.audience == occupation,
+                "courses": courses,
             }
         )
-    return render(request, "courses/courses_list.html", {"cards": cards})
+    return render(request, "courses/courses_list.html", {"groups": groups})
 
 
 def pricing(request):
-    published = ordered_for_user(
-        list(Course.objects.filter(is_published=True)), request.user
-    )
-    enrolled_ids = set()
-    if request.user.is_authenticated:
-        enrolled_ids = set(
-            Enrollment.objects.filter(user=request.user, is_active=True).values_list(
-                "course_id", flat=True
-            )
-        )
+    owned = owned_track_ids(request.user)
+    occupation = user_occupation(request.user)
+    tracks = [
+        {
+            "track": t,
+            "owned": t.id in owned,
+            "recommended": bool(occupation) and t.audience == occupation,
+            "courses": list(t.published_courses()),
+        }
+        for t in tracks_ordered_for_user(request.user)
+    ]
     is_verified_student = (
         request.user.is_authenticated
         and getattr(request.user, "profile", None)
@@ -137,11 +143,7 @@ def pricing(request):
     return render(
         request,
         "courses/pricing.html",
-        {
-            "courses": published,
-            "enrolled_ids": enrolled_ids,
-            "is_verified_student": is_verified_student,
-        },
+        {"tracks": tracks, "is_verified_student": is_verified_student},
     )
 
 
@@ -151,13 +153,13 @@ def industries(request):
 
 def course_overview(request, slug):
     course = get_object_or_404(
-        Course.objects.prefetch_related(
+        Course.objects.select_related("track").prefetch_related(
             Prefetch("modules__lessons", queryset=Lesson.objects.order_by("order"))
         ),
         slug=slug,
         is_published=True,
     )
-    enrollment = get_enrollment(request.user, course)
+    has_access = has_track_access(request.user, course)
     completed_ids = set()
     if request.user.is_authenticated:
         _, _, _, completed_ids = course_progress(request.user, course)
@@ -167,7 +169,8 @@ def course_overview(request, slug):
         "courses/course_overview.html",
         {
             "course": course,
-            "enrollment": enrollment,
+            "track": course.track,
+            "has_access": has_access,
             "completed_ids": completed_ids,
             "first_lesson": first_lesson,
         },
@@ -178,56 +181,35 @@ def course_overview(request, slug):
 
 @login_required
 def dashboard(request):
-    active_enrollments = (
-        Enrollment.objects.filter(user=request.user, is_active=True)
-        .select_related("course")
-        .order_by("created_at")
-    )
-
-    my_courses = []
-    for enrollment in active_enrollments:
-        course = enrollment.course
-        done, total, percent, completed_ids = course_progress(request.user, course)
-        nxt = next_lesson_for(request.user, course, completed_ids)
-        certificate = Certificate.objects.filter(user=request.user, course=course).first()
-        module_stats = []
-        for module in course.modules.prefetch_related("lessons"):
-            lessons = list(module.lessons.all())
-            m_done = sum(1 for l in lessons if l.id in completed_ids)
-            module_stats.append(
+    owned = owned_track_ids(request.user)
+    my_tracks = []
+    for track in Track.objects.filter(id__in=owned):
+        courses = []
+        for course in track.published_courses():
+            done, total, percent, completed_ids = course_progress(request.user, course)
+            nxt = next_lesson_for(request.user, course, completed_ids)
+            certificate = Certificate.objects.filter(user=request.user, course=course).first()
+            courses.append(
                 {
-                    "module": module,
-                    "done": m_done,
-                    "total": len(lessons),
-                    "percent": round(m_done / len(lessons) * 100) if lessons else 0,
+                    "course": course,
+                    "done": done,
+                    "total": total,
+                    "percent": percent,
+                    "next_lesson": nxt,
+                    "certificate": certificate,
                 }
             )
-        my_courses.append(
-            {
-                "course": course,
-                "done": done,
-                "total": total,
-                "percent": percent,
-                "next_lesson": nxt,
-                "certificate": certificate,
-                "module_stats": module_stats,
-            }
-        )
+        my_tracks.append({"track": track, "courses": courses})
 
-    enrolled_ids = {mc["course"].id for mc in my_courses}
-    available = [
-        c
-        for c in ordered_for_user(
-            list(Course.objects.filter(is_published=True)), request.user
-        )
-        if c.id not in enrolled_ids
-    ]
-    occupation = ""
-    if getattr(request.user, "profile", None):
-        occupation = request.user.profile.occupation
+    occupation = user_occupation(request.user)
     recommended = [
-        {"course": c, "recommended": c.track == occupation, "first_lesson": c.first_lesson()}
-        for c in available
+        {
+            "track": t,
+            "recommended": bool(occupation) and t.audience == occupation,
+            "course_count": t.published_courses().count(),
+        }
+        for t in tracks_ordered_for_user(request.user)
+        if t.id not in owned
     ]
 
     attempts = QuizAttempt.objects.filter(user=request.user).select_related("quiz__lesson")[:5]
@@ -235,16 +217,15 @@ def dashboard(request):
     return render(
         request,
         "courses/dashboard.html",
-        {"my_courses": my_courses, "recommended": recommended, "attempts": attempts},
+        {"my_tracks": my_tracks, "recommended": recommended, "attempts": attempts},
     )
 
 
 @login_required
 def my_learning(request, course_slug):
-    course = get_object_or_404(Course, slug=course_slug)
+    course = get_object_or_404(Course.objects.select_related("track"), slug=course_slug)
     first_lesson = course.first_lesson()
-    if not has_active_enrollment(request.user, course):
-        # Not enrolled: send them to the free first lesson if there is one.
+    if not has_track_access(request.user, course):
         if first_lesson:
             return redirect("lesson_detail", course_slug=course.slug, lesson_id=first_lesson.id)
         return redirect("course_overview", slug=course.slug)
@@ -266,17 +247,18 @@ def my_learning(request, course_slug):
 
 @login_required
 def lesson_detail(request, course_slug, lesson_id):
-    course = get_object_or_404(Course, slug=course_slug)
+    course = get_object_or_404(Course.objects.select_related("track"), slug=course_slug)
     lesson = get_object_or_404(Lesson, id=lesson_id, module__course=course)
 
-    enrolled = has_active_enrollment(request.user, course)
+    has_access = has_track_access(request.user, course)
     first_lesson = course.first_lesson()
     is_free_preview = first_lesson is not None and lesson.id == first_lesson.id
 
-    if not enrolled and not is_free_preview:
+    if not has_access and not is_free_preview:
         messages.info(
             request,
-            "The first lesson of every course is free — upgrade to Pro to unlock the rest.",
+            "The first lesson of every course is free — unlock the "
+            f"{course.track.name if course.track else 'course'} track for full access.",
         )
         return redirect("course_overview", slug=course.slug)
 
@@ -293,6 +275,7 @@ def lesson_detail(request, course_slug, lesson_id):
         "courses/lesson_detail.html",
         {
             "course": course,
+            "track": course.track,
             "lesson": lesson,
             "module": lesson.module,
             "prev_lesson": prev_lesson,
@@ -302,8 +285,8 @@ def lesson_detail(request, course_slug, lesson_id):
             "percent": percent,
             "completed": lesson.id in completed_ids,
             "has_quiz": has_quiz,
-            "enrolled": enrolled,
-            "is_free_preview": is_free_preview and not enrolled,
+            "enrolled": has_access,
+            "is_free_preview": is_free_preview and not has_access,
         },
     )
 
@@ -311,13 +294,14 @@ def lesson_detail(request, course_slug, lesson_id):
 @login_required
 def certificates(request):
     certs = Certificate.objects.filter(user=request.user).select_related("course")
-    enrollments = Enrollment.objects.filter(user=request.user, is_active=True).select_related("course")
+    cert_course_ids = set(certs.values_list("course_id", flat=True))
     in_progress = []
-    for e in enrollments:
-        if certs.filter(course=e.course).exists():
-            continue
-        done, total, percent, _ = course_progress(request.user, e.course)
-        in_progress.append({"course": e.course, "done": done, "total": total, "percent": percent})
+    for track_id in owned_track_ids(request.user):
+        for course in Course.objects.filter(track_id=track_id, is_published=True):
+            if course.id in cert_course_ids:
+                continue
+            done, total, percent, _ = course_progress(request.user, course)
+            in_progress.append({"course": course, "done": done, "total": total, "percent": percent})
     return render(
         request,
         "courses/certificates.html",
@@ -335,13 +319,16 @@ def certificate_download(request, uid):
 # ---------- JSON APIs ----------
 
 def _accessible_lesson_or_none(user, lesson_id):
-    """A lesson is accessible when the user is actively enrolled, or when it's
-    the course's free first lesson."""
-    lesson = Lesson.objects.filter(id=lesson_id).select_related("module__course").first()
+    """Accessible when the user owns the course's track, or it's the free first lesson."""
+    lesson = (
+        Lesson.objects.filter(id=lesson_id)
+        .select_related("module__course__track")
+        .first()
+    )
     if lesson is None:
         return None
     course = lesson.module.course
-    if Enrollment.objects.filter(user=user, course=course, is_active=True).exists():
+    if has_track_access(user, course):
         return lesson
     first = course.first_lesson()
     if first is not None and first.id == lesson.id:
@@ -354,7 +341,7 @@ def _accessible_lesson_or_none(user, lesson_id):
 def api_complete_lesson(request, lesson_id):
     lesson = _accessible_lesson_or_none(request.user, lesson_id)
     if lesson is None:
-        return JsonResponse({"error": "Upgrade to Pro to access this lesson"}, status=403)
+        return JsonResponse({"error": "Unlock this track to access the lesson"}, status=403)
     progress, _ = LessonProgress.objects.get_or_create(user=request.user, lesson=lesson)
     if not progress.completed:
         progress.completed = True
@@ -378,7 +365,7 @@ def api_complete_lesson(request, lesson_id):
 def api_quiz(request, lesson_id):
     lesson = _accessible_lesson_or_none(request.user, lesson_id)
     if lesson is None:
-        return JsonResponse({"error": "Upgrade to Pro to access this lesson"}, status=403)
+        return JsonResponse({"error": "Unlock this track to access the lesson"}, status=403)
     quiz = Quiz.objects.filter(lesson=lesson).prefetch_related("questions__choices").first()
     if quiz is None:
         return JsonResponse({"error": "No quiz for this lesson"}, status=404)
@@ -403,7 +390,7 @@ def api_quiz(request, lesson_id):
 def api_quiz_submit(request, lesson_id):
     lesson = _accessible_lesson_or_none(request.user, lesson_id)
     if lesson is None:
-        return JsonResponse({"error": "Upgrade to Pro to access this lesson"}, status=403)
+        return JsonResponse({"error": "Unlock this track to access the lesson"}, status=403)
     quiz = Quiz.objects.filter(lesson=lesson).prefetch_related("questions__choices").first()
     if quiz is None:
         return JsonResponse({"error": "No quiz for this lesson"}, status=404)

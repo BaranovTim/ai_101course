@@ -1,0 +1,82 @@
+{% extends "app_base.html" %}
+{% block title %}{% if lesson %}Edit Lesson{% else %}New Lesson{% endif %} | Studio{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-3xl px-4 py-10 sm:px-8">
+  <a href="{% url 'studio_course' course.id %}" class="flex items-center gap-1 font-mono text-xs text-on-surface-variant hover:text-primary">
+    <span class="material-symbols-outlined text-sm">arrow_back</span> Back to {{ course.title }}
+  </a>
+  <h1 class="mt-4 text-3xl font-extrabold tracking-tight">{% if lesson %}Edit “{{ lesson.title }}”{% else %}New Lesson{% endif %}</h1>
+  {% if lesson %}
+  <a href="{% url 'studio_quiz' lesson.id %}" class="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-secondary hover:underline">
+    <span class="material-symbols-outlined text-lg">quiz</span> Edit this lesson's quiz →
+  </a>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" class="mt-8 space-y-5 rounded-2xl border border-outline-variant/60 bg-white p-8 shadow-card">
+    {% csrf_token %}
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">Module</label>
+        {{ form.module }}
+        {% for e in form.module.errors %}<p class="mt-1 text-xs text-error">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">Order within module</label>
+        {{ form.order }}
+      </div>
+    </div>
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">Title</label>
+        {{ form.title }}
+        {% for e in form.title.errors %}<p class="mt-1 text-xs text-error">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">Slug</label>
+        {{ form.slug }}
+        {% for e in form.slug.errors %}<p class="mt-1 text-xs text-error">{{ e }}</p>{% endfor %}
+      </div>
+    </div>
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">Type</label>
+        {{ form.lesson_type }}
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">Duration (minutes)</label>
+        {{ form.duration_minutes }}
+      </div>
+    </div>
+    <div>
+      <label class="mb-1.5 block text-sm font-medium">Image (optional)</label>
+      {% if lesson and lesson.image %}
+        <img src="{{ lesson.image.url }}" alt="" class="mb-2 max-h-40 rounded-xl border border-outline-variant/50"/>
+      {% endif %}
+      {{ form.image }}
+      <p class="mt-1 font-mono text-xs text-on-surface-variant">{{ form.image.help_text }}</p>
+    </div>
+    <div>
+      <label class="mb-1.5 block text-sm font-medium">Video URL (optional)</label>
+      {{ form.video_url }}
+    </div>
+    <div>
+      <label class="mb-1.5 block text-sm font-medium">Lesson content</label>
+      {{ form.content }}
+      <p class="mt-1 font-mono text-xs text-on-surface-variant">{{ form.content.help_text }}</p>
+    </div>
+    <div>
+      <label class="mb-1.5 block text-sm font-medium">Instructions (optional)</label>
+      {{ form.instructions }}
+      <p class="mt-1 font-mono text-xs text-on-surface-variant">{{ form.instructions.help_text }}</p>
+    </div>
+    <div>
+      <label class="mb-1.5 block text-sm font-medium">Exercise prompt (optional)</label>
+      {{ form.exercise_prompt }}
+      <p class="mt-1 font-mono text-xs text-on-surface-variant">{{ form.exercise_prompt.help_text }}</p>
+    </div>
+    <button type="submit" class="rounded-lg bg-primary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">
+      {% if lesson %}Save Lesson{% else %}Create Lesson{% endif %}
+    </button>
+  </form>
+</div>
+{% endblock %}

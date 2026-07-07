@@ -2,28 +2,28 @@
 {% block title %}Pricing | AI 101 Academy{% endblock %}
 {% block content %}
 <section class="mx-auto max-w-[1280px] px-4 py-20 sm:px-10">
-  <div class="text-center">
+  <div class="text-center" data-reveal>
     <p class="font-mono text-xs uppercase tracking-widest text-secondary">Pricing</p>
-    <h1 class="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">Simple, honest pricing</h1>
+    <h1 class="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">Buy a track, not a course</h1>
     <p class="mx-auto mt-4 max-w-xl text-lg text-on-surface-variant">
-      Every course starts with a <strong>free first lesson</strong> — no card required.
-      If you enjoy it, one payment unlocks the full course forever.
+      One payment unlocks <strong>every course in a track</strong> — forever, including future additions.
+      Start with the General track; add your career track when you're ready.
     </p>
   </div>
 
   <!-- How it works -->
   <div class="mx-auto mt-14 grid max-w-4xl gap-6 sm:grid-cols-3">
-    <div class="rounded-2xl border border-outline-variant/50 bg-white p-6 text-center shadow-card">
+    <div data-reveal class="tilt rounded-2xl border border-outline-variant/50 bg-white p-6 text-center shadow-card">
       <span class="material-symbols-outlined text-3xl text-primary">play_circle</span>
       <h3 class="mt-2 font-bold">1 · Try it free</h3>
       <p class="mt-1 text-sm text-on-surface-variant">The first lesson of every course is free, including its quiz and the AI tutor.</p>
     </div>
-    <div class="rounded-2xl border border-outline-variant/50 bg-white p-6 text-center shadow-card">
-      <span class="material-symbols-outlined text-3xl text-secondary">workspace_premium</span>
-      <h3 class="mt-2 font-bold">2 · Go Pro when ready</h3>
-      <p class="mt-1 text-sm text-on-surface-variant">One payment per course. Lifetime access, all updates, certificate included.</p>
+    <div data-reveal class="tilt rounded-2xl border border-outline-variant/50 bg-white p-6 text-center shadow-card">
+      <span class="material-symbols-outlined text-3xl text-secondary">category</span>
+      <h3 class="mt-2 font-bold">2 · Unlock a track</h3>
+      <p class="mt-1 text-sm text-on-surface-variant">One payment opens all of a track's courses — plus everything we add to it later.</p>
     </div>
-    <div class="rounded-2xl border border-outline-variant/50 bg-white p-6 text-center shadow-card">
+    <div data-reveal class="tilt rounded-2xl border border-outline-variant/50 bg-white p-6 text-center shadow-card">
       <span class="material-symbols-outlined text-3xl text-primary">school</span>
       <h3 class="mt-2 font-bold">3 · Students save</h3>
       <p class="mt-1 text-sm text-on-surface-variant">Upload your student ID in Settings — once verified, discounted pricing applies automatically.</p>
@@ -36,41 +36,51 @@
   </div>
   {% endif %}
 
-  <!-- Course price cards -->
-  {% if courses %}
+  <!-- Track price cards -->
+  {% if tracks %}
   <div class="mx-auto mt-14 grid max-w-5xl gap-8 md:grid-cols-2">
-    {% for course in courses %}
-    <div class="rounded-3xl border border-outline-variant/60 bg-white p-8 shadow-card">
+    {% for t in tracks %}
+    <div data-reveal="zoom" class="relative rounded-3xl border bg-white p-8 shadow-card {% if t.track.audience == 'general' %}border-2 border-primary shadow-glow{% else %}border-outline-variant/60{% endif %}">
+      {% if t.track.audience == 'general' %}
+      <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary to-secondary px-4 py-1.5 font-mono text-xs font-medium uppercase tracking-wide text-white">Start Here</span>
+      {% elif t.recommended %}
+      <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-secondary px-4 py-1.5 font-mono text-xs font-medium uppercase tracking-wide text-white">★ Your Career Track</span>
+      {% endif %}
       <div class="flex items-start justify-between gap-3">
-        <div>
-          <span class="rounded-full bg-surface-container px-3 py-1 font-mono text-xs uppercase text-primary">{{ course.get_track_display }}</span>
-          <h2 class="mt-3 text-lg font-bold">{{ course.title }}</h2>
+        <div class="flex items-center gap-3">
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-container text-primary">
+            <span class="material-symbols-outlined">{{ t.track.icon }}</span>
+          </span>
+          <div>
+            <h2 class="text-lg font-bold">{{ t.track.name }}</h2>
+            <p class="font-mono text-xs text-on-surface-variant">{{ t.track.get_audience_display }}</p>
+          </div>
         </div>
         <div class="text-right">
-          <p class="text-3xl font-extrabold">{{ course.price_display }}</p>
-          {% if course.student_price_display %}
-          <p class="font-mono text-xs text-secondary">{{ course.student_price_display }} students</p>
-          {% endif %}
+          <p class="text-3xl font-extrabold">{{ t.track.price_display }}</p>
+          {% if t.track.student_price_display %}<p class="font-mono text-xs text-secondary">{{ t.track.student_price_display }} students</p>{% endif %}
         </div>
       </div>
-      <ul class="mt-6 space-y-2.5 text-sm">
-        <li class="flex items-start gap-3"><span class="material-symbols-outlined text-lg text-success">check_circle</span> {{ course.lesson_count }} lessons · lifetime access</li>
-        <li class="flex items-start gap-3"><span class="material-symbols-outlined text-lg text-success">check_circle</span> Quizzes, AI tutor &amp; PDF certificate</li>
-        <li class="flex items-start gap-3"><span class="material-symbols-outlined text-lg text-success">check_circle</span> First lesson free — try before you buy</li>
+      {% if t.track.description %}<p class="mt-4 text-sm text-on-surface-variant">{{ t.track.description }}</p>{% endif %}
+      <ul class="mt-5 space-y-2.5 text-sm">
+        {% for course in t.courses %}
+        <li class="flex items-start gap-3"><span class="material-symbols-outlined text-lg text-success">check_circle</span> {{ course.title }} <span class="font-mono text-xs text-on-surface-variant">({{ course.lesson_count }} lessons)</span></li>
+        {% empty %}
+        <li class="flex items-start gap-3 text-on-surface-variant"><span class="material-symbols-outlined text-lg">pending</span> Courses in preparation</li>
+        {% endfor %}
+        <li class="flex items-start gap-3"><span class="material-symbols-outlined text-lg text-success">check_circle</span> Quizzes, AI tutor &amp; PDF certificates</li>
+        <li class="flex items-start gap-3"><span class="material-symbols-outlined text-lg text-success">check_circle</span> Lifetime access, incl. future courses in this track</li>
       </ul>
-      <div class="mt-8 flex flex-wrap gap-3">
-        {% if course.id in enrolled_ids %}
-          <a href="{% url 'my_learning' course.slug %}" class="flex-1 rounded-lg bg-primary-container px-6 py-3 text-center font-semibold text-white shadow-card transition hover:-translate-y-px">Continue Learning</a>
-        {% else %}
-          {% if user.is_authenticated %}
-          <form method="post" action="{% url 'checkout' course.slug %}" class="flex-1">
+      <div class="mt-8">
+        {% if t.owned %}
+          <a href="{% url 'dashboard' %}" class="block rounded-lg bg-success/10 px-6 py-3 text-center font-semibold text-success">✓ Owned — Go to Dashboard</a>
+        {% elif user.is_authenticated %}
+          <form method="post" action="{% url 'checkout' t.track.slug %}">
             {% csrf_token %}
-            <button type="submit" class="w-full rounded-lg bg-primary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">Unlock Full Course</button>
+            <button type="submit" class="w-full rounded-lg bg-primary-container px-6 py-3 font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">Unlock {{ t.track.name }}</button>
           </form>
-          {% else %}
-          <a href="{% url 'signup' %}" class="flex-1 rounded-lg bg-primary-container px-6 py-3 text-center font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">Create Free Account</a>
-          {% endif %}
-          <a href="{% url 'course_overview' course.slug %}" class="rounded-lg border border-outline-variant px-6 py-3 font-semibold transition hover:border-primary hover:text-primary">Details</a>
+        {% else %}
+          <a href="{% url 'signup' %}" class="block rounded-lg bg-primary-container px-6 py-3 text-center font-semibold text-white shadow-card transition hover:-translate-y-px hover:shadow-glow">Create Free Account</a>
         {% endif %}
       </div>
     </div>
@@ -79,8 +89,8 @@
   {% else %}
   <div class="mx-auto mt-14 max-w-lg rounded-3xl border-2 border-dashed border-outline-variant bg-white p-12 text-center">
     <span class="material-symbols-outlined text-5xl text-outline">storefront</span>
-    <h2 class="mt-4 text-xl font-bold">Courses coming soon</h2>
-    <p class="mt-2 text-on-surface-variant">Pricing will appear here once the first course is published.</p>
+    <h2 class="mt-4 text-xl font-bold">Tracks coming soon</h2>
+    <p class="mt-2 text-on-surface-variant">Pricing will appear here once the first track is published.</p>
   </div>
   {% endif %}
 
@@ -89,16 +99,16 @@
     <h2 class="text-center text-2xl font-bold">Frequently asked questions</h2>
     <div class="mt-8 space-y-4">
       <details class="group rounded-2xl border border-outline-variant/60 bg-white p-6 shadow-card">
+        <summary class="cursor-pointer list-none font-semibold">What exactly do I get when I buy a track?</summary>
+        <p class="mt-3 text-sm leading-relaxed text-on-surface-variant">Every course currently in the track, plus any course we add to it in the future — with quizzes, the AI tutor, and a PDF certificate per completed course. Access never expires.</p>
+      </details>
+      <details class="group rounded-2xl border border-outline-variant/60 bg-white p-6 shadow-card">
         <summary class="cursor-pointer list-none font-semibold">Is the first lesson really free?</summary>
         <p class="mt-3 text-sm leading-relaxed text-on-surface-variant">Yes — lesson one of every course, including its quiz and the AI tutor, is free with just an account. No card details needed.</p>
       </details>
       <details class="group rounded-2xl border border-outline-variant/60 bg-white p-6 shadow-card">
         <summary class="cursor-pointer list-none font-semibold">How does the student discount work?</summary>
         <p class="mt-3 text-sm leading-relaxed text-on-surface-variant">Upload a photo of your valid student ID in Settings. Our team reviews it, and once approved the reduced student price is applied automatically whenever you check out.</p>
-      </details>
-      <details class="group rounded-2xl border border-outline-variant/60 bg-white p-6 shadow-card">
-        <summary class="cursor-pointer list-none font-semibold">Do I need any technical background?</summary>
-        <p class="mt-3 text-sm leading-relaxed text-on-surface-variant">None at all. Our courses are written for everyday professionals — if you can write an email, you can learn to use AI effectively.</p>
       </details>
       <details class="group rounded-2xl border border-outline-variant/60 bg-white p-6 shadow-card">
         <summary class="cursor-pointer list-none font-semibold">What payment methods do you accept?</summary>

@@ -4,8 +4,10 @@ from django.conf import settings
 from django.db import models
 
 
-class Course(models.Model):
-    TRACK_CHOICES = [
+class Track(models.Model):
+    """A purchasable bundle of courses. Learners buy the General track first,
+    then add the career track that matches their job."""
+    AUDIENCE_CHOICES = [
         ("general", "General — everyone"),
         ("hospitality", "Hospitality & Tourism"),
         ("banking", "Banking & Finance"),
@@ -19,14 +21,14 @@ class Course(models.Model):
         ("business_owner", "Small Business Owners"),
     ]
     slug = models.SlugField(unique=True)
-    title = models.CharField(max_length=200)
-    tagline = models.CharField(max_length=300, blank=True)
-    description = models.TextField(blank=True)
-    track = models.CharField(
+    name = models.CharField(max_length=200)
+    description = models.CharField(max_length=400, blank=True)
+    icon = models.CharField(max_length=50, default="school", help_text="Material Symbols icon name")
+    audience = models.CharField(
         max_length=30,
-        choices=TRACK_CHOICES,
+        choices=AUDIENCE_CHOICES,
         default="general",
-        help_text="Which career track this course belongs to. Learners see courses matching their occupation first.",
+        help_text="Learners whose occupation matches see this track recommended first.",
     )
     price_cents = models.PositiveIntegerField(default=10000, help_text="Price in US cents, e.g. 10000 = $100.")
     student_price_cents = models.PositiveIntegerField(
@@ -35,10 +37,14 @@ class Course(models.Model):
         help_text="Optional discounted price (in cents) for verified students. Leave blank for no student discount.",
     )
     is_published = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0, help_text="Display order — the General track is usually first.")
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["order", "created_at"]
+
     def __str__(self):
-        return self.title
+        return self.name
 
     @property
     def price_display(self):
@@ -60,6 +66,32 @@ class Course(models.Model):
         ):
             return self.student_price_cents
         return self.price_cents
+
+    def published_courses(self):
+        return self.courses.filter(is_published=True)
+
+    def lesson_total(self):
+        return Lesson.objects.filter(module__course__track=self, module__course__is_published=True).count()
+
+
+class Course(models.Model):
+    slug = models.SlugField(unique=True)
+    title = models.CharField(max_length=200)
+    tagline = models.CharField(max_length=300, blank=True)
+    description = models.TextField(blank=True)
+    track = models.ForeignKey(
+        Track,
+        related_name="courses",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="The track this course belongs to. Buying the track unlocks all of its courses.",
+    )
+    is_published = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
 
     def lesson_count(self):
         return Lesson.objects.filter(module__course=self).count()
@@ -156,17 +188,18 @@ class Choice(models.Model):
 
 
 class Enrollment(models.Model):
+    """Access to a whole track (and therefore all of its courses)."""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="enrollments", on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, related_name="enrollments", on_delete=models.CASCADE)
+    track = models.ForeignKey(Track, related_name="enrollments", on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(default=False)
     activated_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = [("user", "course")]
+        unique_together = [("user", "track")]
 
     def __str__(self):
-        return f"{self.user} → {self.course}"
+        return f"{self.user} → {self.track}"
 
 
 class LessonProgress(models.Model):

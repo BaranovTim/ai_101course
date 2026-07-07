@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from courses.models import Course, Enrollment
+from courses.models import Enrollment, Track
 
 from .models import Payment
 
@@ -19,8 +19,8 @@ def stripe_configured():
     return bool(settings.STRIPE_SECRET_KEY and settings.STRIPE_PUBLISHABLE_KEY)
 
 
-def activate_enrollment(user, course):
-    enrollment, _ = Enrollment.objects.get_or_create(user=user, course=course)
+def activate_enrollment(user, track):
+    enrollment, _ = Enrollment.objects.get_or_create(user=user, track=track)
     if not enrollment.is_active:
         enrollment.is_active = True
         enrollment.activated_at = timezone.now()
@@ -30,33 +30,32 @@ def activate_enrollment(user, course):
 
 @login_required
 @require_POST
-def checkout(request, course_slug):
-    course = get_object_or_404(Course, slug=course_slug, is_published=True)
+def checkout(request, track_slug):
+    track = get_object_or_404(Track, slug=track_slug, is_published=True)
 
-    enrollment = Enrollment.objects.filter(user=request.user, course=course, is_active=True).first()
-    if enrollment:
-        messages.info(request, "You already own this course.")
+    if Enrollment.objects.filter(user=request.user, track=track, is_active=True).exists():
+        messages.info(request, "You already own this track.")
         return redirect("dashboard")
 
-    price_cents = course.price_for(request.user)
-    is_student_price = price_cents != course.price_cents
+    price_cents = track.price_for(request.user)
+    is_student_price = price_cents != track.price_cents
 
     if not stripe_configured():
         # Local dev mode: no Stripe keys yet — show a simulated checkout page
         # so the full purchase flow can be exercised end to end.
         payment = Payment.objects.create(
             user=request.user,
-            course=course,
+            track=track,
             amount_cents=price_cents,
             status="pending",
         )
         return render(
             request,
             "payments/simulated_checkout.html",
-            {"course": course, "payment": payment, "is_student_price": is_student_price},
+            {"track": track, "payment": payment, "is_student_price": is_student_price},
         )
 
-    description = course.tagline or course.title
+    description = track.description or track.name
     if is_student_price:
         description += " (verified student price)"
     session = stripe.checkout.Session.create(
@@ -69,20 +68,20 @@ def checkout(request, course_slug):
                     "currency": "usd",
                     "unit_amount": price_cents,
                     "product_data": {
-                        "name": course.title,
+                        "name": f"{track.name} — AI 101 Academy",
                         "description": description,
                     },
                 },
                 "quantity": 1,
             }
         ],
-        metadata={"user_id": request.user.id, "course_id": course.id},
+        metadata={"user_id": request.user.id, "track_id": track.id},
         success_url=request.build_absolute_uri("/payments/success/") + "?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=request.build_absolute_uri("/payments/cancel/"),
     )
     Payment.objects.create(
         user=request.user,
-        course=course,
+        track=track,
         stripe_session_id=session.id,
         amount_cents=price_cents,
         status="pending",
@@ -99,14 +98,19 @@ def simulate_payment(request, payment_id):
     payment = get_object_or_404(Payment, id=payment_id, user=request.user, status="pending")
     payment.status = "simulated"
     payment.save()
-    activate_enrollment(request.user, payment.course)
-    messages.success(request, "Payment simulated — you're enrolled! Add Stripe keys in .env to take real payments.")
+    activate_enrollment(request.user, payment.track)
+    messages.success(
+        request,
+        f"Payment simulated — the {payment.track.name} track is unlocked! "
+        "Add Stripe keys in .env to take real payments.",
+    )
     return redirect("payment_success")
 
 
 @login_required
 def payment_success(request):
     session_id = request.GET.get("session_id")
+    track = None
     if session_id and stripe_configured():
         # Verify with Stripe directly so enrollment works even before
         # the webhook is configured locally.
@@ -114,15 +118,19 @@ def payment_success(request):
             session = stripe.checkout.Session.retrieve(session_id)
             if session.payment_status == "paid":
                 payment = Payment.objects.filter(stripe_session_id=session_id).first()
-                if payment and payment.status != "paid":
-                    payment.status = "paid"
-                    payment.stripe_payment_intent = session.payment_intent or ""
-                    payment.save()
-                    activate_enrollment(payment.user, payment.course)
+                if payment:
+                    track = payment.track
+                    if payment.status != "paid":
+                        payment.status = "paid"
+                        payment.stripe_payment_intent = session.payment_intent or ""
+                        payment.save()
+                        activate_enrollment(payment.user, payment.track)
         except stripe.error.StripeError:
             pass
-    course = Course.objects.filter(is_published=True).first()
-    return render(request, "payments/success.html", {"course": course})
+    if track is None:
+        last = Payment.objects.filter(user=request.user).exclude(status="pending").first()
+        track = last.track if last else None
+    return render(request, "payments/success.html", {"track": track})
 
 
 @login_required
@@ -149,5 +157,5 @@ def stripe_webhook(request):
             payment.status = "paid"
             payment.stripe_payment_intent = session.get("payment_intent") or ""
             payment.save()
-            activate_enrollment(payment.user, payment.course)
+            activate_enrollment(payment.user, payment.track)
     return HttpResponse(status=200)
