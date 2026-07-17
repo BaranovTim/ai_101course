@@ -72,23 +72,21 @@ def offline_reply(message):
     )
 
 
-def get_tutor_reply(user, message, history, lesson=None):
-    """Return the tutor's reply. Uses the Anthropic API when configured."""
-    if not settings.ANTHROPIC_API_KEY:
-        return offline_reply(message)
-
-    client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-
+def _build_context(message, history, lesson):
     system = TUTOR_SYSTEM_PROMPT
     if lesson is not None:
         system += (
             f"\nThe student is currently on the lesson \"{lesson.title}\" "
             f"in {lesson.module}. Relate answers to it when helpful."
         )
-
     messages = [{"role": m.role, "content": m.content} for m in history]
     messages.append({"role": "user", "content": message})
+    return system, messages
 
+
+def _anthropic_reply(message, history, lesson):
+    client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+    system, messages = _build_context(message, history, lesson)
     try:
         response = client.messages.create(
             model="claude-opus-4-8",
@@ -104,3 +102,37 @@ def get_tutor_reply(user, message, history, lesson=None):
         return "The AI tutor is very busy right now — please try again in a minute."
     except anthropic.APIError:
         return "The AI tutor hit a temporary error. Please try again.\n\n" + offline_reply(message)
+
+
+def _openai_reply(message, history, lesson):
+    import openai
+
+    client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+    system, messages = _build_context(message, history, lesson)
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            max_tokens=1024,
+            messages=[{"role": "system", "content": system}] + messages,
+        )
+        reply = response.choices[0].message.content
+        return reply or "Sorry, I couldn't generate a reply — please try again."
+    except openai.AuthenticationError:
+        return "The AI tutor API key appears to be invalid. Falling back to offline mode:\n\n" + offline_reply(message)
+    except openai.RateLimitError:
+        return (
+            "The AI tutor can't reply right now — the OpenAI account has no remaining "
+            "credit or is rate-limited. Check billing at platform.openai.com.\n\n" + offline_reply(message)
+        )
+    except openai.OpenAIError:
+        return "The AI tutor hit a temporary error. Please try again.\n\n" + offline_reply(message)
+
+
+def get_tutor_reply(user, message, history, lesson=None):
+    """Return the tutor's reply using whichever provider is configured.
+    Prefers Anthropic (Claude); falls back to OpenAI, then offline mode."""
+    if settings.ANTHROPIC_API_KEY:
+        return _anthropic_reply(message, history, lesson)
+    if settings.OPENAI_API_KEY:
+        return _openai_reply(message, history, lesson)
+    return offline_reply(message)
