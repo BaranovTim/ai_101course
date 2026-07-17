@@ -1,4 +1,4 @@
-# AI 101 Academy 🧠
+# AI 101 Academy 
 
 An interactive AI education platform for the Cayman Islands community.
 Django + PostgreSQL backend, Tailwind-styled frontend with React components,
