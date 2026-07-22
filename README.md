@@ -6,6 +6,10 @@ Stripe payments, PDF certificates, and a proactive AI tutor.
 
 ## Quick start
 
+> **Setting up on a brand-new computer?** Follow the step-by-step guide in
+> **[SETUP.md](SETUP.md)** — it covers installing Python/Git, creating `.env`,
+> and initializing the database from scratch.
+
 ```bash
 ./scripts/start.sh
 ```
